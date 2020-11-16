@@ -139,6 +139,8 @@ class PreviewManager implements IPreview {
 			return;
 		}
 
+		\OCP\Util::writeLog(self::class, "#### registerProvider " . $mimeTypeRegex, \OCP\ILogger::DEBUG);
+
 		if (!isset($this->providers[$mimeTypeRegex])) {
 			$this->providers[$mimeTypeRegex] = [];
 		}
@@ -155,6 +157,7 @@ class PreviewManager implements IPreview {
 			return [];
 		}
 
+		\OCP\Util::writeLog(self::class, "#### getProviders ", \OCP\ILogger::DEBUG);
 		$this->registerCoreProviders();
 		$this->registerBootstrapProviders();
 		if ($this->providerListDirty) {
@@ -375,6 +378,12 @@ class PreviewManager implements IPreview {
 			return;
 		}
 		$this->registeredCoreProviders = true;
+		\OCP\Util::writeLog(self::class, "#### registerCoreProviders ", \OCP\ILogger::DEBUG);
+
+		$this->registerCoreProvider(Preview\Imaginary::class, '/image\/.*/');
+
+		// FIXME: for some reason putting that class in config.php is not enough...
+		return
 
 		$this->registerCoreProvider(Preview\TXT::class, '/text\/plain/');
 		$this->registerCoreProvider(Preview\MarkDown::class, '/text\/(x-)?markdown/');
