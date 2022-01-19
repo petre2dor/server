@@ -42,6 +42,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
@@ -75,6 +76,9 @@ class Connection extends \Doctrine\DBAL\Connection {
 
 	/** @var int */
 	protected $queriesExecuted = 0;
+
+	/** @var DbDataCollector|null */
+	protected $dbDataCollector = null;
 
 	/**
 	 * @throws Exception
@@ -181,7 +185,16 @@ class Connection extends \Doctrine\DBAL\Connection {
 		$this->adapter = new $params['adapter']($this);
 		$this->tablePrefix = $params['tablePrefix'];
 
-		$this->systemConfig = \OC::$server->getSystemConfig();
+		$this->systemConfig = \OC::$server->get(SystemConfig::class);
+		/** @var \OC\Profiler\Profiler */
+		$profiler = \OC::$server->get(\OC\Profiler\Profiler::class);
+		if ($profiler->isEnabled()) {
+			$this->dbDataCollector = new DbDataCollector($this);
+			$profiler->add($this->dbDataCollector);
+			$debugStack = new DebugStack();
+			$this->dbDataCollector->addLogger($debugStack);
+			$this->_config->setSQLLogger($debugStack);
+		}
 		$this->logger = \OC::$server->getLogger();
 	}
 
@@ -233,7 +246,6 @@ class Connection extends \Doctrine\DBAL\Connection {
 		$sql = $this->replaceTablePrefix($sql);
 		$sql = $this->adapter->fixupStatement($sql);
 		$this->queriesExecuted++;
-		$this->logQueryToFile($sql);
 		return parent::executeQuery($sql, $params, $types, $qcp);
 	}
 
@@ -244,7 +256,6 @@ class Connection extends \Doctrine\DBAL\Connection {
 		$sql = $this->replaceTablePrefix($sql);
 		$sql = $this->adapter->fixupStatement($sql);
 		$this->queriesExecuted++;
-		$this->logQueryToFile($sql);
 		return parent::executeUpdate($sql, $params, $types);
 	}
 
@@ -266,19 +277,7 @@ class Connection extends \Doctrine\DBAL\Connection {
 		$sql = $this->replaceTablePrefix($sql);
 		$sql = $this->adapter->fixupStatement($sql);
 		$this->queriesExecuted++;
-		$this->logQueryToFile($sql);
 		return parent::executeStatement($sql, $params, $types);
-	}
-
-	protected function logQueryToFile(string $sql): void {
-		$logFile = $this->systemConfig->getValue('query_log_file', '');
-		if ($logFile !== '' && is_writable(dirname($logFile)) && (!file_exists($logFile) || is_writable($logFile))) {
-			file_put_contents(
-				$this->systemConfig->getValue('query_log_file', ''),
-				$sql . "\n",
-				FILE_APPEND
-			);
-		}
 	}
 
 	/**

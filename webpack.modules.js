@@ -102,4 +102,7 @@ module.exports = {
 	workflowengine: {
 		workflowengine: path.join(__dirname, 'apps/workflowengine/src', 'workflowengine.js'),
 	},
+	profiler: {
+		profiler: path.join(__dirname, 'apps/profiler/src', 'main.js'),
+	},
 }

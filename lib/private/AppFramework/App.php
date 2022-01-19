@@ -40,6 +40,7 @@ use OCP\AppFramework\Http\IOutput;
 use OCP\AppFramework\QueryException;
 use OCP\HintException;
 use OCP\IRequest;
+use Psr\Container\ContainerExceptionInterface;
 
 /**
  * Entry point for every request in your app. You can consider this as your
@@ -114,21 +115,26 @@ class App {
 	 * @throws HintException
 	 */
 	public static function main(string $controllerName, string $methodName, DIContainer $container, array $urlParams = null) {
+		/** @var \OC\Profiler\Profiler $dataCollectorManager */
+		$profiler = $container->get(\OC\Profiler\Profiler::class);
+		$config = $container->get(\OCP\IConfig::class);
+		$profiler->setEnabled($config->getSystemValue('debug', false) && !str_starts_with($controllerName, '\\OCA\\Profiler\\'));
+
 		if (!is_null($urlParams)) {
 			/** @var Request $request */
-			$request = $container->query(IRequest::class);
+			$request = $container->get(IRequest::class);
 			$request->setUrlParameters($urlParams);
 		} elseif (isset($container['urlParams']) && !is_null($container['urlParams'])) {
 			/** @var Request $request */
-			$request = $container->query(IRequest::class);
+			$request = $container->get(IRequest::class);
 			$request->setUrlParameters($container['urlParams']);
 		}
 		$appName = $container['AppName'];
 
 		// first try $controllerName then go for \OCA\AppName\Controller\$controllerName
 		try {
-			$controller = $container->query($controllerName);
-		} catch (QueryException $e) {
+			$controller = $container->get($controllerName);
+		} catch (ContainerExceptionInterface $e) {
 			if (strpos($controllerName, '\\Controller\\') !== false) {
 				// This is from a global registered app route that is not enabled.
 				[/*OC(A)*/, $app, /* Controller/Name*/] = explode('\\', $controllerName, 3);
@@ -157,6 +163,11 @@ class App {
 		] = $dispatcher->dispatch($controller, $methodName);
 
 		$io = $container[IOutput::class];
+
+		if ($profiler->isEnabled()) {
+			$profile = $profiler->collect($container->get(IRequest::class), $response);
+			$profiler->saveProfile($profile);
+		}
 
 		if (!is_null($httpHeaders)) {
 			$io->setHeader($httpHeaders);

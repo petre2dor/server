@@ -845,7 +845,6 @@ class Server extends ServerContainer implements IServerContainer {
 			}
 			$connectionParams = $factory->createConnectionParams();
 			$connection = $factory->getConnection($type, $connectionParams);
-			$connection->getConfiguration()->setSQLLogger($c->getQueryLogger());
 			return $connection;
 		});
 		/** @deprecated 19.0.0 */
