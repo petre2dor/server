@@ -29,6 +29,7 @@
  */
 namespace OC\BackgroundJob;
 
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use OCP\AppFramework\QueryException;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\AutoloadNotAllowedException;
@@ -114,7 +115,22 @@ class JobList implements IJobList {
 			$argument = json_encode($argument);
 			$query->andWhere($query->expr()->eq('argument', $query->createNamedParameter($argument)));
 		}
-		$query->execute();
+
+		// Add galera safe delete chunking if using mysql
+		// Stops us hitting wsrep_max_ws_rows when large row counts are deleted
+		if ($this->connection->getDatabasePlatform() instanceof MySQLPlatform) {
+			// Then use chunked delete
+			$max = 100000;
+
+			$query->setMaxResults($max);
+
+			do {
+				$deleted = $query->execute();
+			} while ($deleted === $max);
+		} else {
+			// Dont use chunked delete - let the DB handle the large row count natively
+			$query->execute();
+		}
 	}
 
 	/**
