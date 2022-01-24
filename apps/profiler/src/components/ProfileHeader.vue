@@ -1,11 +1,11 @@
 <template>
-	<header class="top-bar" :class="background">
+	<header class="top-bar" v-if="profile" :class="background">
 		<h2 class="url">
 			{{ profile.url }}
 		</h2>
 		<div>
 			<div><b>Method:</b> {{ profile.method }} </div>
-			<div><b>HTTP Status:</b> {{ profile.status_code }} </div>
+			<div><b>HTTP Status:</b> {{ profile.statusCode }} </div>
 			<div><b>Profiled on:</b> {{ time }} </div>
 			<div><b>Token:</b> {{ profile.token }}</div>
 		</div>
@@ -13,27 +13,33 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
 	name: 'ProfileHeader',
-	props: {
-		profile: {
-			type: Object,
-			required: true,
-		},
-	},
 	computed: {
+		profile() {
+			return this.profiles[this.$route.params.token]
+		},
 		background() {
-			if (this.profile.status_code === '200') {
+			if (!this.profile) {
+				return ''
+			}
+			if (this.profile.statusCode === '200') {
 				return 'status-success'
 			}
-			if (this.profile.status_code === '500') {
+			if (this.profile.statusCode === '500') {
 				return 'status-error'
 			}
 			return 'status-warning'
 		},
 		time() {
-			return new Date(Date.UTC(this.profile.time)).toUTCString()
+			if (!this.profile) {
+				return ''
+			}
+			return new Date(this.profile.time * 1000).toUTCString()
 		},
+		...mapState(['profiles']),
 	},
 }
 </script>

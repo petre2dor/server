@@ -92,7 +92,7 @@ class Profiler {
 		return $this->storage->find($ip, $url, $limit, $method, $start, $end, $statusCode);
 	}
 
-    public function dateProviders() {
+    public function dataProviders() {
 		return array_keys($this->dataCollectors);
     }
 

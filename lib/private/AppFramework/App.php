@@ -34,11 +34,13 @@ namespace OC\AppFramework;
 use OC\AppFramework\DependencyInjection\DIContainer;
 use OC\AppFramework\Http\Dispatcher;
 use OC\AppFramework\Http\Request;
+use OC\Profiler\Profiler;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\ICallbackResponse;
 use OCP\AppFramework\Http\IOutput;
 use OCP\AppFramework\QueryException;
 use OCP\HintException;
+use OCP\IConfig;
 use OCP\IRequest;
 use Psr\Container\ContainerExceptionInterface;
 
@@ -115,10 +117,10 @@ class App {
 	 * @throws HintException
 	 */
 	public static function main(string $controllerName, string $methodName, DIContainer $container, array $urlParams = null) {
-		/** @var \OC\Profiler\Profiler $dataCollectorManager */
-		$profiler = $container->get(\OC\Profiler\Profiler::class);
-		$config = $container->get(\OCP\IConfig::class);
-		$profiler->setEnabled($config->getSystemValue('debug', false) && !str_starts_with($controllerName, '\\OCA\\Profiler\\'));
+		/** @var Profiler $dataCollectorManager */
+		$profiler = $container->get(Profiler::class);
+		$config = $container->get(IConfig::class);
+		$profiler->setEnabled($config->getSystemValue('debug', false) && !str_starts_with($urlParams['_route'], 'profiler.'));
 
 		if (!is_null($urlParams)) {
 			/** @var Request $request */

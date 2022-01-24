@@ -166,9 +166,9 @@ class FileProfilerStorage {
             stream_context_set_option($context, 'zlib', 'level', 3);
         }
 
-        if (false === file_put_contents($file, serialize($data), 0, $context)) {
-            return false;
-        }
+		if (false === file_put_contents($file, serialize($data), 0, $context)) {
+			return false;
+		}
 
         if (!$profileIndexed) {
             // Add to index

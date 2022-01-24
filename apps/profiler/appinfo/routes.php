@@ -26,8 +26,9 @@
 return [
 	'routes' => [
 		['name' => 'main#index', 'url' => '/', 'verb' => 'GET'],
-		['name' => 'main#profileInfo', 'url' => '/profile/{token}/', 'verb' => 'GET'],
+		['name' => 'database_profiler#explain', 'url' => '/explain/{token}/{query}', 'verb' => 'GET'],
 		['name' => 'main#profiler', 'url' => '/profiler/{profiler}/{token}/', 'verb' => 'GET'],
+		['name' => 'main#profileInfo', 'url' => '/profile/{token}/', 'verb' => 'GET'],
 	],
 	'ocs' => [
 		[

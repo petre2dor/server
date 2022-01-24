@@ -12,10 +12,8 @@ use OCP\AppFramework\Http\Response;
 
 class DbDataCollector extends \OCP\DataCollector\AbstractDataCollector
 {
-	/**
-	 * @var DebugStack
-	 */
-	protected $loggers;
+	/** @var DebugStack */
+	protected $logger;
 
 	/** @var Connection */
 	private $connection;
@@ -24,13 +22,12 @@ class DbDataCollector extends \OCP\DataCollector\AbstractDataCollector
 	 * DbDataCollector constructor.
 	 * @param Connection $connection
 	 */
-	public function __construct(Connection $connection)
-	{
+	public function __construct(Connection $connection) {
 		$this->connection = $connection;
 	}
 
-	public function addLogger(DebugStack $logger, $name = 'default') {
-		$this->loggers[$name] = $logger;
+	public function setLogger(DebugStack $logger, $name = 'default') {
+		$this->logger = $logger;
 	}
 
     /**
@@ -38,10 +35,7 @@ class DbDataCollector extends \OCP\DataCollector\AbstractDataCollector
      */
     public function collect(Request $request, Response $response, \Throwable $exception = null): void
     {
-		$queries = [];
-		foreach ($this->loggers as $name => $logger) {
-			$queries[$name] = $this->sanitizeQueries($logger->queries);
-		}
+		$queries = $this->sanitizeQueries($this->logger->queries);
 
 		$this->data = [
 			'queries' => $queries,
@@ -52,8 +46,11 @@ class DbDataCollector extends \OCP\DataCollector\AbstractDataCollector
 		return 'db';
 	}
 
-	private function sanitizeQueries(array $queries): array
-	{
+    public function getQueries() {
+    	return $this->data['queries'];
+	}
+
+	private function sanitizeQueries(array $queries): array {
 		foreach ($queries as $i => $query) {
 			$queries[$i] = $this->sanitizeQuery($query);
 		}
@@ -61,8 +58,7 @@ class DbDataCollector extends \OCP\DataCollector\AbstractDataCollector
 		return $queries;
 	}
 
-	private function sanitizeQuery(array $query): array
-	{
+	private function sanitizeQuery(array $query): array {
 		$query['explainable'] = true;
 		$query['runnable'] = true;
 		if (null === $query['params']) {

@@ -192,7 +192,7 @@ class Connection extends \Doctrine\DBAL\Connection {
 			$this->dbDataCollector = new DbDataCollector($this);
 			$profiler->add($this->dbDataCollector);
 			$debugStack = new DebugStack();
-			$this->dbDataCollector->addLogger($debugStack);
+			$this->dbDataCollector->setLogger($debugStack);
 			$this->_config->setSQLLogger($debugStack);
 		}
 		$this->logger = \OC::$server->getLogger();

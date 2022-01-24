@@ -34,6 +34,7 @@ namespace OCA\Profiler\Controller;
 
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\RedirectResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\AppFramework\Services\InitialStateProvider;
@@ -57,14 +58,10 @@ class MainController extends Controller {
 	/**
 	 * @NoCSRFRequired
 	 */
-	public function index(): TemplateResponse {
-		$profiles = $this->profiler->find(null, null, 20, null, null, null);
+	public function index(): RedirectResponse {
+		$profiles = $this->profiler->find(null, null, 1, null, null, null);
 
-		\OCP\Util::addScript('profiler', 'profiler');
-		$this->initialState->provideInitialState('profiles', $profiles);
-		$this->initialState->provideInitialState('profiler-categories', $this->profiler->dateProviders());
-
-		return new TemplateResponse('profiler', 'index', []);
+		return new RedirectResponse('/index.php/app/profiler/db/' . $profiles['token']);
 	}
 
 	/**
@@ -74,8 +71,9 @@ class MainController extends Controller {
 		$profiles = $this->profiler->find(null, null, 20, null, null, null);
 
 		\OCP\Util::addScript('profiler', 'profiler');
-		$this->initialState->provideInitialState('profiles', $profiles);
-		$this->initialState->provideInitialState('profiler-categories', $this->profiler->dateProviders());
+		$this->initialState->provideInitialState('recentProfiles', $profiles);
+		$this->initialState->provideInitialState('profiler-categories', $this->profiler->dataProviders());
+		$this->initialState->provideInitialState('token', $token);
 
 		return new TemplateResponse('profiler', 'index', []);
 	}

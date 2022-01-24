@@ -8,14 +8,10 @@ Vue.use(Vuex)
 export default new Store({
 	state: {
 		profiles: {},
-		loading: false,
 	},
 	mutations: {
 		addProfile(state, { token, profile }) {
-			state.profiles[token] = profile
-		},
-		setLoading(state, loading) {
-			state.loading = loading
+			Vue.set(state.profiles, token, profile)
 		},
 	},
 	getters: {
@@ -28,11 +24,9 @@ export default new Store({
 			if (state.profiles[token]) {
 				return
 			}
-			commit('setLoading', true)
 			axios.get(generateUrl('/apps/profiler/profile/{token}', { token }))
 				.then((response) => {
 					commit('addProfile', { token, profile: response.data.profile })
-					commit('setLoading', false)
 				})
 		},
 	},

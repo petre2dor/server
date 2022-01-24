@@ -8,5 +8,8 @@ $baseDir = $vendorDir;
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'OCA\\Profiler\\AppInfo\\Application' => $baseDir . '/../lib/AppInfo/Application.php',
+    'OCA\\Profiler\\Controller\\DatabaseProfilerController' => $baseDir . '/../lib/Controller/DatabaseProfilerController.php',
     'OCA\\Profiler\\Controller\\MainController' => $baseDir . '/../lib/Controller/MainController.php',
+    'OCA\\Profiler\\DataCollector\\EventLoggerDataProvider' => $baseDir . '/../lib/DataCollector/EventLoggerDataProvider.php',
+    'OCA\\Profiler\\DataCollector\\HttpDataCollector' => $baseDir . '/../lib/DataCollector/HttpDataCollector.php',
 );

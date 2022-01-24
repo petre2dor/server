@@ -24,6 +24,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import DatabaseProfilerView from '../views/DatabaseProfilerView'
 import LoadingView from '../views/LoadingView'
+import RequestView from '../views/RequestView'
+import EventsView from '../views/EventsView'
 import { getRootUrl, generateUrl } from '@nextcloud/router'
 
 Vue.use(VueRouter)
@@ -51,6 +53,18 @@ export default new VueRouter({
 			path: '/apps/profiler/profiler/db/:token/',
 			name: 'db',
 			component: DatabaseProfilerView,
+			props: true,
+		},
+		{
+			path: '/apps/profiler/profiler/http/:token/',
+			name: 'http',
+			component: RequestView,
+			props: true,
+		},
+		{
+			path: '/apps/profiler/profiler/event/:token/',
+			name: 'event',
+			component: EventsView,
 			props: true,
 		},
 	],

@@ -1,14 +1,5 @@
 <?php
-<<<<<<< Updated upstream
 
-
-namespace OC\DB;
-
-
-class ObjectParameter
-{
-
-=======
 /*
  * This file is part of the Symfony package.
  *
@@ -20,41 +11,40 @@ class ObjectParameter
 
 namespace OC\DB;
 
-final class ObjectParameter
-{
-	/** @var object  */
-	private $object;
+final class ObjectParameter {
+    private $object;
+    private $error;
+    private $stringable;
+    private $class;
 
-	/** @var \Throwable|null */
-	private $error;
+    /**
+     * @param object $object
+     */
+    public function __construct($object, ?\Throwable $error) {
+        $this->object = $object;
+        $this->error = $error;
+        $this->stringable = \is_callable([$object, '__toString']);
+        $this->class = \get_class($object);
+    }
 
-	/** @var bool  */
-	private $stringable;
+    /**
+     * @return object
+     */
+    public function getObject() {
+        return $this->object;
+    }
 
-	/** @var string */
-	private $class;
+    public function getError(): ?\Throwable {
+        return $this->error;
+    }
 
-	public function __construct(object $object, ?\Throwable $error) {
-		$this->object = $object;
-		$this->error = $error;
-		$this->stringable = \is_callable([$object, '__toString']);
-		$this->class = \get_class($object);
-	}
+    public function isStringable(): bool
+    {
+        return $this->stringable;
+    }
 
-	public function getObject(): object {
-		return $this->object;
-	}
-
-	public function getError(): ?\Throwable {
-		return $this->error;
-	}
-
-	public function isStringable(): bool {
-		return $this->stringable;
-	}
-
-	public function getClass(): string {
-		return $this->class;
-	}
->>>>>>> Stashed changes
+    public function getClass(): string
+    {
+        return $this->class;
+    }
 }

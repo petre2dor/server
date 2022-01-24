@@ -143,4 +143,11 @@ class Profile implements \JsonSerializable {
 			'collectors' => $this->collectors,
 		];
 	}
+
+    public function getCollector(string $collectorName): ?IDataCollector {
+		if (!array_key_exists($collectorName, $this->collectors)) {
+			return null;
+		}
+		return $this->collectors[$collectorName];
+    }
 }

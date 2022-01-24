@@ -23,7 +23,10 @@ class ComposerStaticInitProfiler
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'OCA\\Profiler\\AppInfo\\Application' => __DIR__ . '/..' . '/../lib/AppInfo/Application.php',
+        'OCA\\Profiler\\Controller\\DatabaseProfilerController' => __DIR__ . '/..' . '/../lib/Controller/DatabaseProfilerController.php',
         'OCA\\Profiler\\Controller\\MainController' => __DIR__ . '/..' . '/../lib/Controller/MainController.php',
+        'OCA\\Profiler\\DataCollector\\EventLoggerDataProvider' => __DIR__ . '/..' . '/../lib/DataCollector/EventLoggerDataProvider.php',
+        'OCA\\Profiler\\DataCollector\\HttpDataCollector' => __DIR__ . '/..' . '/../lib/DataCollector/HttpDataCollector.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

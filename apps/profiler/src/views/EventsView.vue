@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2>Database queries</h2>
+		<h2>Events</h2>
 		<div style="overflow-x:auto;">
 			<table>
 				<thead>
@@ -12,28 +12,21 @@
 							Time<span />
 						</th>
 						<th style="width: 100%;">
-							Info
+							Description
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="(query, index) in queries" :v-key="query.sql">
+					<tr v-for="(event, index) in events" :v-key="event.id">
 						<td>
 							{{ index }}
 						</td>
 						<td>
-							{{ query.executionMS }} ms
+							{{ event.duration }} ms
+							(Start: {{ event.start }}, End: {{ event.stop }})
 						</td>
 						<td>
-							<pre>
-{{ query.sql }}
-						</pre>
-							<h4>Parameters:</h4>
-							{{ query.params }}
-							<button v-if="query.explainable && explainedQueries[index] === undefined" @click="explainQuery(index)">
-								Explain query
-							</button>
-							<QueryExplaination v-else-if="explainedQueries[index]" :explaination="explainedQueries[index] ? explainedQueries[index] : ''" />
+							{{ event.description }}
 						</td>
 					</tr>
 				</tbody>
@@ -43,38 +36,19 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
-import QueryExplaination from '../components/QueryExplaination'
-import axios from '@nextcloud/axios'
-import { generateUrl } from '@nextcloud/router'
+import { mapState } from 'vuex'
 
 export default {
-	name: 'DatabaseProfilerView',
-	components: {
-		QueryExplaination,
-	},
-	data() {
-		return {
-			explainedQueries: {},
-		}
-	},
+	name: 'EventsView',
 	computed: {
-		queries() {
-			return this.profiles[this.$route.params.token]?.collectors.db.queries
+		events() {
+			return this.profiles[this.$route.params.token]?.collectors.event
 		},
-		...mapGetters(['profile']),
 		...mapState(['profiles']),
-	},
-	methods: {
-		explainQuery(index) {
-			axios.get(generateUrl('/apps/profiler/explain/{token}/{index}', { token: this.$route.params.token, index }))
-				.then((response) => {
-					this.$set(this.explainedQueries, index, response.data)
-				})
-		},
 	},
 }
 </script>
+
 
 <style lang="scss" scoped>
 table {
