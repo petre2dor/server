@@ -598,6 +598,7 @@ class OC {
 		$eventLogger = \OC::$server->getEventLogger();
 		$eventLogger->log('autoloader', 'Autoloader', $loaderStart, $loaderEnd);
 		$eventLogger->start('boot', 'Initialize');
+		$eventLogger->start('runtime', 'Runtime (total - autoloader)');
 
 		// Override php.ini and log everything if we're troubleshooting
 		if (self::$config->getValue('loglevel') === ILogger::DEBUG) {

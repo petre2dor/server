@@ -57,6 +57,7 @@ use OCP\IUserSession;
 use OCP\Support\Subscription\IRegistry;
 use OCP\UserStatus\IManager as IUserStatusManager;
 use OCP\Util;
+use OC\Profiler\Profiler;
 
 class TemplateLayout extends \OC_Template {
 	private static $versionHash = '';
@@ -150,6 +151,14 @@ class TemplateLayout extends \OC_Template {
 				} else {
 					$this->assign('userStatus', false);
 				}
+			}
+
+			// Setup profiler toolbar
+			$profiler = \OC::$server->get(Profiler::class);
+			if ($profiler->isEnabled() && \OC::$server->getGroupManager()->isAdmin($user->getUID())) {
+				// TODO potentially create more DB query when profiler is enabled
+				$this->initialState->provideInitialState('profiler', 'request-token', $profiler->getNextToken());
+				\OCP\Util::addScript('profiler', 'profilerToolbar');
 			}
 
 			// check if app menu icons should be inverted

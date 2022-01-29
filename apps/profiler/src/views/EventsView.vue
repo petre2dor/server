@@ -22,11 +22,11 @@
 							{{ index }}
 						</td>
 						<td>
-							{{ event.duration }} ms
-							(Start: {{ event.start }}, End: {{ event.stop }})
+							{{ event.duration * 1000 }} ms
+							(Start: {{ event.start * 1000 }}, End: {{ event.stop * 1000 }})
 						</td>
 						<td>
-							{{ event.description }}
+							{{ event.description * 1000 }}
 						</td>
 					</tr>
 				</tbody>

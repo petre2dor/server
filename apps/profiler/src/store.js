@@ -8,10 +8,14 @@ Vue.use(Vuex)
 export default new Store({
 	state: {
 		profiles: {},
+		stackElements: [],
 	},
 	mutations: {
 		addProfile(state, { token, profile }) {
 			Vue.set(state.profiles, token, profile)
+		},
+		addStackElement(state, stackElement) {
+			state.stackElements.push(stackElement)
 		},
 	},
 	getters: {

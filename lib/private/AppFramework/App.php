@@ -34,11 +34,14 @@ namespace OC\AppFramework;
 use OC\AppFramework\DependencyInjection\DIContainer;
 use OC\AppFramework\Http\Dispatcher;
 use OC\AppFramework\Http\Request;
+use OC\Diagnostics\EventLogger;
 use OC\Profiler\Profiler;
+use OC\Profiler\RoutingDataCollector;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\ICallbackResponse;
 use OCP\AppFramework\Http\IOutput;
 use OCP\AppFramework\QueryException;
+use OCP\Diagnostics\IEventLogger;
 use OCP\HintException;
 use OCP\IConfig;
 use OCP\IRequest;
@@ -117,10 +120,13 @@ class App {
 	 * @throws HintException
 	 */
 	public static function main(string $controllerName, string $methodName, DIContainer $container, array $urlParams = null) {
-		/** @var Profiler $dataCollectorManager */
+		/** @var Profiler $profiler */
 		$profiler = $container->get(Profiler::class);
 		$config = $container->get(IConfig::class);
 		$profiler->setEnabled($config->getSystemValue('debug', false) && !str_starts_with($urlParams['_route'], 'profiler.'));
+		if ($profiler->isEnabled()) {
+			$profiler->add(new RoutingDataCollector($container['AppName'], $controllerName, $methodName));
+		}
 
 		if (!is_null($urlParams)) {
 			/** @var Request $request */
@@ -167,8 +173,13 @@ class App {
 		$io = $container[IOutput::class];
 
 		if ($profiler->isEnabled()) {
+			/** @var EventLogger $eventLogger */
+			$eventLogger = $container->get(IEventLogger::class);
+			$eventLogger->end('runtime');
 			$profile = $profiler->collect($container->get(IRequest::class), $response);
 			$profiler->saveProfile($profile);
+			$io->setHeader('X-Debug-Token:' . $profile->getToken());
+			$io->setHeader('Server-Timing: token;desc="' . $profile->getToken() . '"');
 		}
 
 		if (!is_null($httpHeaders)) {

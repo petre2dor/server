@@ -22,7 +22,7 @@
 							{{ index }}
 						</td>
 						<td>
-							{{ query.executionMS }} ms
+							{{ (query.executionMS * 1000).toFixed(1) }} ms
 						</td>
 						<td>
 							<pre>

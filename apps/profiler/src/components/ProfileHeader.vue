@@ -25,10 +25,10 @@ export default {
 			if (!this.profile) {
 				return ''
 			}
-			if (this.profile.statusCode === '200') {
+			if (this.profile.statusCode === 200) {
 				return 'status-success'
 			}
-			if (this.profile.statusCode === '500') {
+			if (this.profile.statusCode === 500) {
 				return 'status-error'
 			}
 			return 'status-warning'
@@ -73,5 +73,4 @@ export default {
 .url {
 	margin-left: 48px;
 }
-
 </style>

@@ -29,21 +29,24 @@ namespace OC\Profiler;
 use OC\AppFramework\Http\Request;
 use OCP\AppFramework\Http\Response;
 use OCP\DataCollector\IDataCollector;
-use OCP\DataCollector\IManager;
 
 class Profiler {
 	/** @var array<string, IDataCollector> */
 	private $dataCollectors = [];
 
-	/** @var FileProfilerStorage */
-	private $storage;
+	/** @var FileProfilerStorage  */
+	private  $storage;
 
 	/** @var bool */
 	private $enabled;
 
+	/** @var string */
+	private $nextToken;
+
 	public function __construct() {
 		$this->storage = new FileProfilerStorage('/var/www/html/data/profiler');
 		$this->enabled = true;
+		$this->nextToken = substr(hash('sha256', uniqid((string)mt_rand(), true)), 0, 6);
 	}
 
 	public function add(IDataCollector $dataCollector): void {
@@ -67,14 +70,11 @@ class Profiler {
 	}
 
 	public function collect(Request $request, Response $response): Profile {
-		$profile = new Profile(substr(hash('sha256', uniqid((string)mt_rand(), true)),
-			0, 6));
+		$profile = new Profile($this->nextToken);
 		$profile->setTime(time());
 		$profile->setUrl($request->getRequestUri());
 		$profile->setMethod($request->getMethod());
 		$profile->setStatusCode($response->getStatus());
-
-		$response->addHeader('X-Debug-Token', $profile->getToken());
 		foreach ($this->dataCollectors as $dataCollector) {
 			$dataCollector->collect($request, $response, null);
 
@@ -102,5 +102,9 @@ class Profiler {
 
     public function setEnabled(bool $enabled): void {
 		$this->enabled = $enabled;
+	}
+
+	public function getNextToken(): string {
+		return $this->nextToken;
 	}
 }
