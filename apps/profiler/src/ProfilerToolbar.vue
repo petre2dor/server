@@ -1,7 +1,7 @@
 <template>
 	<div id="profiler-toolbar">
 		<footer v-if="profile" class="bottom-bar">
-			<div role="button" class="toolbar-block" @click="openProfiler('info')">
+			<div role="button" class="toolbar-block" @click="openProfiler('router')">
 				<div class="text-v-center px-3" :class="background">
 					{{ profile.statusCode }}
 				</div>

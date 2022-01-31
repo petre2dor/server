@@ -1341,6 +1341,7 @@ return array(
     'OC\\Profiler\\FileProfilerStorage' => $baseDir . '/lib/private/Profiler/FileProfilerStorage.php',
     'OC\\Profiler\\Profile' => $baseDir . '/lib/private/Profiler/Profile.php',
     'OC\\Profiler\\Profiler' => $baseDir . '/lib/private/Profiler/Profiler.php',
+    'OC\\Profiler\\RoutingDataCollector' => $baseDir . '/lib/private/Profiler/RoutingDataCollector.php',
     'OC\\RedisFactory' => $baseDir . '/lib/private/RedisFactory.php',
     'OC\\Remote\\Api\\ApiBase' => $baseDir . '/lib/private/Remote/Api/ApiBase.php',
     'OC\\Remote\\Api\\ApiCollection' => $baseDir . '/lib/private/Remote/Api/ApiCollection.php',

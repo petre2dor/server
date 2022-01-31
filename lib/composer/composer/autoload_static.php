@@ -1370,6 +1370,7 @@ class ComposerStaticInit53792487c5a8370acc0b06b1a864ff4c
         'OC\\Profiler\\FileProfilerStorage' => __DIR__ . '/../../..' . '/lib/private/Profiler/FileProfilerStorage.php',
         'OC\\Profiler\\Profile' => __DIR__ . '/../../..' . '/lib/private/Profiler/Profile.php',
         'OC\\Profiler\\Profiler' => __DIR__ . '/../../..' . '/lib/private/Profiler/Profiler.php',
+        'OC\\Profiler\\RoutingDataCollector' => __DIR__ . '/../../..' . '/lib/private/Profiler/RoutingDataCollector.php',
         'OC\\RedisFactory' => __DIR__ . '/../../..' . '/lib/private/RedisFactory.php',
         'OC\\Remote\\Api\\ApiBase' => __DIR__ . '/../../..' . '/lib/private/Remote/Api/ApiBase.php',
         'OC\\Remote\\Api\\ApiCollection' => __DIR__ . '/../../..' . '/lib/private/Remote/Api/ApiCollection.php',
