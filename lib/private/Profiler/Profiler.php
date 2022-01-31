@@ -40,13 +40,9 @@ class Profiler {
 	/** @var bool */
 	private $enabled;
 
-	/** @var string */
-	private $nextToken;
-
 	public function __construct() {
 		$this->storage = new FileProfilerStorage('/var/www/html/data/profiler');
 		$this->enabled = true;
-		$this->nextToken = substr(hash('sha256', uniqid((string)mt_rand(), true)), 0, 6);
 	}
 
 	public function add(IDataCollector $dataCollector): void {
@@ -70,7 +66,7 @@ class Profiler {
 	}
 
 	public function collect(Request $request, Response $response): Profile {
-		$profile = new Profile($this->nextToken);
+		$profile = new Profile($request->getId());
 		$profile->setTime(time());
 		$profile->setUrl($request->getRequestUri());
 		$profile->setMethod($request->getMethod());
@@ -102,9 +98,5 @@ class Profiler {
 
     public function setEnabled(bool $enabled): void {
 		$this->enabled = $enabled;
-	}
-
-	public function getNextToken(): string {
-		return $this->nextToken;
 	}
 }

@@ -24,6 +24,7 @@
 namespace OCA\DAV\Profiler;
 
 use OC\Profiler\Profiler;
+use OCP\IRequest;
 use Sabre\DAV\Server;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
@@ -33,8 +34,8 @@ class ProfilerPlugin extends \Sabre\DAV\ServerPlugin {
 	/** @var Profiler */
 	private $profiler;
 
-	public function __construct(Profiler $profiler) {
-		$this->profiler = $profiler;
+	public function __construct(IRequest $request, Profiler $profiler) {
+		$this->request = $request;
 	}
 
 	public function initialize(Server $server) {
@@ -42,6 +43,6 @@ class ProfilerPlugin extends \Sabre\DAV\ServerPlugin {
 	}
 
 	public function afterMethod(RequestInterface $request, ResponseInterface $response) {
-		$response->addHeader('X-Debug-Token', $this->profiler->getNextToken());
+		$response->addHeader('X-Debug-Token', $this->request->getId());
 	}
 }

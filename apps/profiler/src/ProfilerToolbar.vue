@@ -139,6 +139,9 @@ export default {
 
 	& > .toolbar-block {
 		height: 100%;
+		&, & > .text-v-center {
+			cursor: pointer;
+		}
 	}
 
 	.pr-3, .px-3 {
