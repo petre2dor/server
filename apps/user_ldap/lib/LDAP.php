@@ -32,7 +32,9 @@
  */
 namespace OCA\User_LDAP;
 
+use OC\Profiler\Profiler;
 use OC\ServerNotAvailableException;
+use OCA\User_LDAP\DataCollector\LdapDataCollector;
 use OCA\User_LDAP\Exceptions\ConstraintViolationException;
 use OCA\User_LDAP\PagedResults\IAdapter;
 use OCA\User_LDAP\PagedResults\Php73;
@@ -45,9 +47,18 @@ class LDAP implements ILDAPWrapper {
 	/** @var IAdapter */
 	protected $pagedResultsAdapter;
 
+	private ?LdapDataCollector $dataCollector = null;
+
 	public function __construct(string $logFile = '') {
 		$this->pagedResultsAdapter = new Php73();
 		$this->logFile = $logFile;
+
+		/** @var Profiler $profiler */
+		$profiler = \OC::$server->get(Profiler::class);
+		if ($profiler->isEnabled()) {
+			$this->dataCollector = new LdapDataCollector();
+			$profiler->add($this->dataCollector);
+		}
 	}
 
 	/**
@@ -292,21 +303,30 @@ class LDAP implements ILDAPWrapper {
 		if (function_exists($func)) {
 			$this->preFunctionCall($func, $arguments);
 			$result = call_user_func_array($func, $arguments);
+			\OC::$server->getLogger()->critical('Hello');
 			if ($this->isResultFalse($result)) {
 				$this->postFunctionCall();
+			}
+			if ($this->dataCollector !== null) {
+				$this->dataCollector->stopLastLdapRequest();
 			}
 			return $result;
 		}
 		return null;
 	}
 
-	/**
-	 * @param string $functionName
-	 * @param array $args
-	 */
-	private function preFunctionCall($functionName, $args) {
+	private function preFunctionCall(string $functionName, array $args): void {
 		$this->curFunc = $functionName;
 		$this->curArgs = $args;
+
+		if ($this->dataCollector !== null) {
+			$args = array_reduce($this->curArgs, static function (array $carry, $item): array {
+				$carry[] = !is_resource($item) ? $item : '(resource)';
+				return $carry;
+			}, []);
+
+			$this->dataCollector->startLdapRequest($this->curFunc, $args);
+		}
 
 		if ($this->logFile !== '' && is_writable(dirname($this->logFile)) && (!file_exists($this->logFile) || is_writable($this->logFile))) {
 			$args = array_reduce($this->curArgs, static function (array $carry, $item): array {
