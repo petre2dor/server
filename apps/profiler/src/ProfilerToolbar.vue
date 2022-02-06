@@ -37,6 +37,16 @@
 				</div>
 			</div>
 
+			<div role="button" class="toolbar-block text-v-center px-3" v-if="profile.collectors.ldap" @click="openProfiler('ldap')">
+				{{ profile.collectors.ldap.length }} LDAP request
+				<div v-if="profile.collectors.ldap.length > 0" class="info" style="width: 500px; max-height: 600px; overflow-x: scroll">
+					<div class="info" style="width: 225px">
+						<div><b>Number of queries:</b> {{ profile.collectors.ldap.length }}</div>
+						<div><b>Query time:</b> {{ ldapQueryTime }} ms</div>
+					</div>
+				</div>
+			</div>
+
 			<div role="button" class="toolbar-block text-v-center px-3" @click="openProfiler('db')">
 				{{ stackElements.length }} AJAX requests
 				<div class="info" style="width: 500px; max-height: 600px; overflow-x: scroll">
@@ -77,6 +87,11 @@ export default {
 		queriesTime() {
 			return (Object.values(this.profile.collectors.db.queries).reduce((acc, query) => {
 				return query.executionMS + acc
+			}, 0) * 1000).toFixed(1)
+		},
+		ldapQueryTime() {
+			return (Object.values(this.profile.collectors.ldap).reduce((acc, query) => {
+				return query.end - query.start + acc
 			}, 0) * 1000).toFixed(1)
 		},
 		background() {

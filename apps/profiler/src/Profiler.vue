@@ -5,7 +5,7 @@
 				<AppNavigationCaption
 					title="Categories" />
 				<li v-for="cat in categoryInfo"
-					:key="cat.id" >
+					:key="cat.id">
 					<router-link class="app-navigation-entry-link"
 						:to="{ name: cat.id, params: {token: token} }">
 						<span :title="cat.name" class="app-navigation-entry__title">
@@ -82,6 +82,10 @@ export default {
 				{
 					id: 'event',
 					name: 'Events',
+				},
+				{
+					id: 'ldap',
+					name: 'Ldap',
 				},
 			],
 		}

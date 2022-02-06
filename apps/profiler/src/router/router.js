@@ -25,6 +25,7 @@ import VueRouter from 'vue-router'
 import DatabaseProfilerView from '../views/DatabaseProfilerView'
 import LoadingView from '../views/LoadingView'
 import RequestView from '../views/RequestView'
+import LdapView from '../views/LdapView'
 import RouterView from '../views/RouterView'
 import EventsView from '../views/EventsView'
 import { getRootUrl, generateUrl } from '@nextcloud/router'
@@ -72,6 +73,12 @@ export default new VueRouter({
 			path: '/apps/profiler/profiler/router/:token/',
 			name: 'router',
 			component: RouterView,
+			props: true,
+		},
+		{
+			path: '/apps/profiler/profiler/ldap/:token/',
+			name: 'ldap',
+			component: LdapView,
 			props: true,
 		},
 	],
