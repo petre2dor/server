@@ -64,7 +64,7 @@ class CheckUser extends Command {
 			->addArgument(
 					'ocName',
 					InputArgument::REQUIRED,
-					'the user name as used in Nextcloud'
+					'the user name as used in Nextcloud, or the LDAP DN'
 					 )
 			->addOption(
 					'force',
