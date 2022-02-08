@@ -614,9 +614,9 @@ EOD;
 		$rwCalendar = new Calendar($backend, $calendarInfoSharedRW, $this->l10n, $this->config, $this->logger);
 		$roCalendar = new Calendar($backend, $calendarInfoSharedRO, $this->l10n, $this->config, $this->logger);
 
-		$this->assertEquals(count($ownerCalendar->getChildren()), 2);
-		$this->assertEquals(count($rwCalendar->getChildren()), 2);
-		$this->assertEquals(count($roCalendar->getChildren()), 2);
+		$this->assertCount(2, $ownerCalendar->getChildren());
+		$this->assertCount(2, $rwCalendar->getChildren());
+		$this->assertCount(2, $roCalendar->getChildren());
 
 		// calendar data shall not be altered for the owner
 		$this->assertEquals($ownerCalendar->getChild('event-0')->get(), $publicObjectData);
