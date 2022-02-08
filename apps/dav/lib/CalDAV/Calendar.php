@@ -423,6 +423,9 @@ class Calendar extends \Sabre\CalDAV\Calendar implements IRestorable, IShareable
 		return parent::getChanges($syncToken, $syncLevel, $limit);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function restore(): void {
 		$this->caldavBackend->restoreCalendar((int) $this->calendarInfo['id']);
 	}
@@ -431,6 +434,9 @@ class Calendar extends \Sabre\CalDAV\Calendar implements IRestorable, IShareable
 		$this->useTrashbin = false;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function moveInto($targetName, $sourcePath, INode $sourceNode) {
 		if (!($sourceNode instanceof CalendarObject)) {
 			return false;
