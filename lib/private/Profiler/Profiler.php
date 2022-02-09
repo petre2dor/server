@@ -38,11 +38,10 @@ class Profiler {
 	private  $storage;
 
 	/** @var bool */
-	private $enabled;
+	private $enabled = false;
 
 	public function __construct() {
 		$this->storage = new FileProfilerStorage('/var/www/html/data/profiler');
-		$this->enabled = true;
 	}
 
 	public function add(IDataCollector $dataCollector): void {

@@ -123,7 +123,8 @@ class App {
 		/** @var Profiler $profiler */
 		$profiler = $container->get(Profiler::class);
 		$config = $container->get(IConfig::class);
-		$profiler->setEnabled($config->getSystemValue('debug', false) && !str_starts_with($urlParams['_route'], 'profiler.'));
+		// Disable profiler on the profiler UI
+		$profiler->setEnabled($profiler->isEnabled() && !str_starts_with($urlParams['_route'], 'profiler.'));
 		if ($profiler->isEnabled()) {
 			$profiler->add(new RoutingDataCollector($container['AppName'], $controllerName, $methodName));
 		}
