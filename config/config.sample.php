@@ -1107,7 +1107,7 @@ $CONFIG = [
  *
  * See https://github.com/h2non/imaginary
  */
-'preview_imaginary_url' => 'http://imaginary-host:9000/'
+'preview_imaginary_url' => 'http://previews_hpb:8088/',
 
 /**
  * Only register providers that have been explicitly enabled

@@ -139,8 +139,6 @@ class PreviewManager implements IPreview {
 			return;
 		}
 
-		\OCP\Util::writeLog(self::class, "#### registerProvider " . $mimeTypeRegex, \OCP\ILogger::DEBUG);
-
 		if (!isset($this->providers[$mimeTypeRegex])) {
 			$this->providers[$mimeTypeRegex] = [];
 		}
@@ -380,10 +378,6 @@ class PreviewManager implements IPreview {
 		$this->registeredCoreProviders = true;
 		\OCP\Util::writeLog(self::class, "#### registerCoreProviders ", \OCP\ILogger::DEBUG);
 
-		$this->registerCoreProvider(Preview\Imaginary::class, '/image\/.*/');
-
-		// FIXME: for some reason putting that class in config.php is not enough...
-		return
 
 		$this->registerCoreProvider(Preview\TXT::class, '/text\/plain/');
 		$this->registerCoreProvider(Preview\MarkDown::class, '/text\/(x-)?markdown/');
@@ -396,6 +390,7 @@ class PreviewManager implements IPreview {
 		$this->registerCoreProvider(Preview\Krita::class, '/application\/x-krita/');
 		$this->registerCoreProvider(Preview\MP3::class, '/audio\/mpeg/');
 		$this->registerCoreProvider(Preview\OpenDocument::class, '/application\/vnd.oasis.opendocument.*/');
+		$this->registerCoreProvider(Preview\Imaginary::class, '/image\/.*/');
 
 		// SVG, Office and Bitmap require imagick
 		if (extension_loaded('imagick')) {
