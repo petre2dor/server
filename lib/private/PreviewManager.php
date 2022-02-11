@@ -155,7 +155,6 @@ class PreviewManager implements IPreview {
 			return [];
 		}
 
-		\OCP\Util::writeLog(self::class, "#### getProviders ", \OCP\ILogger::DEBUG);
 		$this->registerCoreProviders();
 		$this->registerBootstrapProviders();
 		if ($this->providerListDirty) {
@@ -376,8 +375,6 @@ class PreviewManager implements IPreview {
 			return;
 		}
 		$this->registeredCoreProviders = true;
-		\OCP\Util::writeLog(self::class, "#### registerCoreProviders ", \OCP\ILogger::DEBUG);
-
 
 		$this->registerCoreProvider(Preview\TXT::class, '/text\/plain/');
 		$this->registerCoreProvider(Preview\MarkDown::class, '/text\/(x-)?markdown/');

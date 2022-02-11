@@ -38,6 +38,7 @@ use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\IConfig;
 use OCP\IImage;
 use OCP\IPreview;
+use OCP\IStreamImage;
 use OCP\Preview\IProviderV2;
 use OCP\Preview\IVersionedPreviewFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -259,7 +260,11 @@ class Generator {
 				$path = $prefix . (string)$preview->width() . '-' . (string)$preview->height() . '-max.' . $ext;
 				try {
 					$file = $previewFolder->newFile($path);
-					$file->putContent($preview->data());
+					if ($preview instanceof IStreamImage) {
+						$file->putContent($preview->resource());
+					} else {
+						$file->putContent($preview->data());
+					}
 				} catch (NotPermittedException $e) {
 					throw new NotFoundException();
 				}

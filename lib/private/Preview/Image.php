@@ -56,7 +56,6 @@ abstract class Image extends ProviderV2 {
 
 		if ($image->valid()) {
 			$image->scaleDownToFit($maxX, $maxY);
-
 			return $image;
 		}
 		return null;

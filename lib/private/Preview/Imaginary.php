@@ -27,6 +27,9 @@ use OCP\Files\File;
 use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IImage;
+use OCP\Image;
+
+use OCP\StreamImage;
 use Psr\Log\LoggerInterface;
 
 class Imaginary extends ProviderV2 {
@@ -59,7 +62,6 @@ class Imaginary extends ProviderV2 {
 	public function getThumbnail(File $file, int $maxX, int $maxY): ?IImage {
 		$maxSizeForImages = $this->config->getSystemValue('preview_max_filesize_image', 50);
 		$size = $file->getSize();
-		$this->logger->error('Imaginary preview geration' . $maxX . ' ' . $maxY);
 
 		if ($maxSizeForImages !== -1 && $size > ($maxSizeForImages * 1024 * 1024)) {
 			return null;
@@ -85,15 +87,7 @@ class Imaginary extends ProviderV2 {
 			return null;
 		}
 
-		// TODO stream directly the response to the object store instead of
-		// first copying it to the local temp storage
-		$image = new \OC_Image();
-		$image->loadFromFileHandle($response->getBody());
-		if ($image->valid()) {
-			$end = microtime(true);
-			return $image;
-		}
-
-		return null;
+		$image = new StreamImage($response->getBody(), 'image/jpeg', $maxX, $maxY);
+		return $image->valid() ? $image : null;
 	}
 }
