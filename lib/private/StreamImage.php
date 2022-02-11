@@ -21,7 +21,10 @@
  *
  */
 
-namespace OCP;
+namespace OC;
+
+use OCP\IStreamImage;
+use OCP\IImage;
 
 /**
  * Only useful when dealing with transferring streamed previews from an external
@@ -71,21 +74,20 @@ class StreamImage implements IStreamImage {
 		return $this->height;
 	}
 
-	/** This will return an invalid result */
 	public function widthTopLeft() {
-		return -1;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function heightTopLeft() {
-		return -1;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function show($mimeType = null) {
-		return -1;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function save($filePath = null, $mimeType = null) {
-		return -1;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function resource() {
@@ -101,49 +103,50 @@ class StreamImage implements IStreamImage {
 	}
 
 	public function getOrientation() {
-		return -1;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function fixOrientation() {
-		return false;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function resize($maxSize) {
-		return false;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function preciseResize(int $width, int $height): bool {
-		return false;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function centerCrop($size = 0) {
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function crop(int $x, int $y, int $w, int $h): bool {
-		return false;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function fitIn($maxWidth, $maxHeight) {
-		return false;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function scaleDownToFit($maxWidth, $maxHeight) {
-		return false;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function copy(): IImage {
-		return $this;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function cropCopy(int $x, int $y, int $w, int $h): IImage {
-		return $this;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function preciseResizeCopy(int $width, int $height): IImage {
-		return $this;
+		throw new \BadMethodCallException('Not implemented');
 	}
 
 	public function resizeCopy(int $maxSize): IImage {
-		return $this;
+		throw new \BadMethodCallException('Not implemented');
 	}
 }

@@ -24,5 +24,4 @@
 namespace OCP;
 
 interface IStreamImage extends IImage {
-
 }

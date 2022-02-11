@@ -27,9 +27,8 @@ use OCP\Files\File;
 use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IImage;
-use OCP\Image;
 
-use OCP\StreamImage;
+use OC\StreamImage;
 use Psr\Log\LoggerInterface;
 
 class Imaginary extends ProviderV2 {
@@ -67,27 +66,50 @@ class Imaginary extends ProviderV2 {
 			return null;
 		}
 
-		$baseUrl = $this->config->getSystemValueString('preview_imaginary_url', 'http://previews_hpb:8088');
-		$baseUrl = rtrim($baseUrl, '/');
+		$imaginaryUrl = $this->config->getSystemValueString('preview_imaginary_url', 'invalid');
+		if ($imaginaryUrl === 'invalid') {
+			$this->logger->error('Imaginary preview provider is enabled, but no url is configured. Please provide the url of your imaginary server to the \'preview_imaginary_url\' config variable.');
+			return null;
+		}
+		$imaginaryUrl = rtrim($imaginaryUrl, '/');
 
 		// Object store
 		$stream = $file->fopen('r');
 
-		$client = $this->service->newClient();
-		$response = $client->post(
-			$baseUrl . "/fit?width=$maxX&height=$maxY&stripmeta=true&type=jpeg", [
-				'stream' => true,
-				'content-type' => $file->getMimeType(),
-				'body' => $stream,
-				'nextcloud' => ['allow_local_address' => true],
+		$httpClient = $this->service->newClient();
+		$parameters = http_build_query([
+			'width' => $maxX,
+			'height' => $maxY,
+			'stripmeta' => 'true',
+			'type' => 'jpeg',
+		]);
+
+		try {
+			$response = $httpClient->post(
+				$imaginaryUrl . '/fit?' . $parameters, [
+					'stream' => true,
+					'content-type' => $file->getMimeType(),
+					'body' => $stream,
+					'nextcloud' => ['allow_local_address' => true],
+				]);
+		} catch (\Exception $e) {
+			$this->logger->error('Imaginary preview generation failed: ' . $e->getMessage(), [
+				'exception' => $e,
 			]);
+			return null;
+		}
 
 		if ($response->getStatusCode() !== 200) {
 			$this->logger->error('Imaginary preview generation failed: ' . json_decode($response->getBody())['message']);
 			return null;
 		}
 
-		$image = new StreamImage($response->getBody(), 'image/jpeg', $maxX, $maxY);
+		if ($response->getHeader('X-Image-Width') && $response->getHeader('X-Image-Height')) {
+			$maxX = (int)$response->getHeader('X-Image-Width');
+			$maxY = (int)$response->getHeader('X-Image-Height');
+		}
+
+		$image = new StreamImage($response->getBody(), $response->getHeader('Content-Type'), $maxX, $maxY);
 		return $image->valid() ? $image : null;
 	}
 }
