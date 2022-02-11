@@ -54,7 +54,7 @@ class ProfilerWrapperCache extends AbstractDataCollector implements IMemcacheTTL
 	/** @inheritDoc */
 	public function set($key, $value, $ttl = 0) {
 		$start = microtime(true);
-		$ret = $this->wrappedCache->set($key, $value, $$ttl);
+		$ret = $this->wrappedCache->set($key, $value, $ttl);
 		$this->data['queries'][] = [
 			'start' => $start,
 			'end' => microtime(true),
