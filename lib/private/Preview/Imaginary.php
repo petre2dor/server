@@ -77,16 +77,17 @@ class Imaginary extends ProviderV2 {
 		$stream = $file->fopen('r');
 
 		$httpClient = $this->service->newClient();
-		$parameters = http_build_query([
+		$parameters = [
 			'width' => $maxX,
 			'height' => $maxY,
 			'stripmeta' => 'true',
 			'type' => 'jpeg',
-		]);
+		];
 
 		try {
 			$response = $httpClient->post(
-				$imaginaryUrl . '/fit?' . $parameters, [
+				$imaginaryUrl . '/fit', [
+					'query' => $parameters,
 					'stream' => true,
 					'content-type' => $file->getMimeType(),
 					'body' => $stream,
