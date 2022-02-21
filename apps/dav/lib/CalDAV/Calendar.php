@@ -443,11 +443,10 @@ class Calendar extends \Sabre\CalDAV\Calendar implements IRestorable, IShareable
 		}
 
 		try {
-			$result = $this->caldavBackend->moveCalendarObject($sourceNode->getCalendarId(), (int)$this->calendarInfo['id'], $sourceNode->getId(), $sourceNode->getPrincipalUri());
+			return $this->caldavBackend->moveCalendarObject($sourceNode->getCalendarId(), (int)$this->calendarInfo['id'], $sourceNode->getId(), $sourceNode->getPrincipalUri());
 		} catch (Exception $e) {
 			$this->logger->error('Could not move calendar object: ' . $e->getMessage(), ['exception' => $e]);
 			return false;
 		}
-		return $result;
 	}
 }

@@ -1424,6 +1424,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 	 * @param int $objectId
 	 * @param string $principalUri
 	 * @param int $calendarType
+	 * @return bool
 	 * @throws Exception
 	 */
 	public function moveCalendarObject(int $sourceCalendarId, int $targetCalendarId, int $objectId, string $principalUri, int $calendarType = self::CALENDAR_TYPE_CALENDAR): bool {
@@ -1434,9 +1435,9 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 
 		$query = $this->db->getQueryBuilder();
 		$query->update('calendarobjects')
-			->set('calendarid', $query->createNamedParameter($targetCalendarId))
-			->where($query->expr()->eq('id', $query->createNamedParameter($objectId)))
-			->andWhere($query->expr()->eq('calendartype', $query->createNamedParameter($calendarType)))
+			->set('calendarid', $query->createNamedParameter($targetCalendarId, IQueryBuilder::PARAM_INT))
+			->where($query->expr()->eq('id', $query->createNamedParameter($objectId, IQueryBuilder::PARAM_INT), IQueryBuilder::PARAM_INT))
+			->andWhere($query->expr()->eq('calendartype', $query->createNamedParameter($calendarType, IQueryBuilder::PARAM_INT), IQueryBuilder::PARAM_INT))
 			->executeStatement();
 
 		$this->purgeProperties($sourceCalendarId, $objectId);
