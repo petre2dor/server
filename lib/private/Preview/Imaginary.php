@@ -52,7 +52,7 @@ class Imaginary extends ProviderV2 {
 	 * {@inheritDoc}
 	 */
 	public function getMimeType(): string {
-		return '/image\/.*/';
+		return '/image\/(bmp|x-bitmap|png|jpeg|gif|heic|heif|svg|webp)/';
 	}
 
 	/**
