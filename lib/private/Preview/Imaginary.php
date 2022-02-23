@@ -30,6 +30,7 @@ use OCP\IImage;
 
 use OC\StreamImage;
 use Psr\Log\LoggerInterface;
+use function Safe\swoole_async_write;
 
 class Imaginary extends ProviderV2 {
 	/** @var IConfig */
@@ -55,10 +56,7 @@ class Imaginary extends ProviderV2 {
 		return '/image\/(bmp|x-bitmap|png|jpeg|gif|heic|heif|svg|webp)/';
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getThumbnail(File $file, int $maxX, int $maxY): ?IImage {
+	public function getCroppedThumbnail(File $file, int $maxX, int $maxY, bool $crop): ?IImage {
 		$maxSizeForImages = $this->config->getSystemValue('preview_max_filesize_image', 50);
 		$size = $file->getSize();
 
@@ -77,22 +75,33 @@ class Imaginary extends ProviderV2 {
 		$stream = $file->fopen('r');
 
 		$httpClient = $this->service->newClient();
+
+		switch ($file->getMimeType()) {
+			case 'image/gif':
+			case 'image/png':
+				$mimeType = 'png';
+				break;
+			default:
+				$mimeType = 'jpeg';
+		}
+
 		$parameters = [
 			'width' => $maxX,
 			'height' => $maxY,
 			'stripmeta' => 'true',
-			'type' => 'jpeg',
+			'type' => $mimeType,
 		];
+
 
 		try {
 			$response = $httpClient->post(
-				$imaginaryUrl . '/fit', [
-					'query' => $parameters,
-					'stream' => true,
-					'content-type' => $file->getMimeType(),
-					'body' => $stream,
-					'nextcloud' => ['allow_local_address' => true],
-				]);
+				$imaginaryUrl . ($crop ? '/smartcrop' : '/fit'), [
+				'query' => $parameters,
+				'stream' => true,
+				'content-type' => $file->getMimeType(),
+				'body' => $stream,
+				'nextcloud' => ['allow_local_address' => true],
+			]);
 		} catch (\Exception $e) {
 			$this->logger->error('Imaginary preview generation failed: ' . $e->getMessage(), [
 				'exception' => $e,
@@ -112,5 +121,12 @@ class Imaginary extends ProviderV2 {
 
 		$image = new StreamImage($response->getBody(), $response->getHeader('Content-Type'), $maxX, $maxY);
 		return $image->valid() ? $image : null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getThumbnail(File $file, int $maxX, int $maxY): ?IImage {
+		return $this->getCroppedThumbnail($file, $maxX, $maxY, false);
 	}
 }
