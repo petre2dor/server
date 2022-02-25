@@ -137,8 +137,10 @@ class Generator {
 			$previewVersion = $file->getPreviewVersion() . '-';
 		}
 
-		if (count($specifications) === 1 && $specifications[0]['width'] === 250
-			&& $specifications[0]['height'] === 250 && str_starts_with($mimeType, 'image/')
+		if (count($specifications) === 1
+			&& (($specifications[0]['width'] === 250 && $specifications[0]['height'] === 250)
+				|| ($specifications[0]['width'] === 150 && $specifications[0]['height'] === 150))
+			&& str_starts_with($mimeType, 'image/')
 			&& $this->config->getSystemValueString('preview_imaginary_url', 'invalid') !== 'invalid') {
 
 			$crop = $specifications[0]['crop'] ?? false;
@@ -226,7 +228,7 @@ class Generator {
 		foreach ($nodes as $node) {
 			$name = $node->getName();
 			if (($prefix === '' || strpos($name, $prefix) === 0)
-				&& (str_starts_with($name, '250-250-crop') && $crop || str_starts_with($name, '250-250') && !$crop)) {
+				&& (str_starts_with($name, '256-256-crop') && $crop || str_starts_with($name, '256-256') && !$crop)) {
 				return $node;
 			}
 		}
@@ -248,7 +250,7 @@ class Generator {
 					continue;
 				}
 
-				$preview = $this->helper->getThumbnail($provider, $file, 250, 250, true);
+				$preview = $this->helper->getThumbnail($provider, $file, 256, 256, true);
 
 				if (!($preview instanceof IImage)) {
 					continue;
@@ -262,7 +264,7 @@ class Generator {
 					continue;
 				}
 
-				$path = $this->generatePath(250, 250, $crop, $preview->dataMimeType(), $prefix);
+				$path = $this->generatePath(256, 256, $crop, $preview->dataMimeType(), $prefix);
 				try {
 					$file = $previewFolder->newFile($path);
 					if ($preview instanceof IStreamImage) {
