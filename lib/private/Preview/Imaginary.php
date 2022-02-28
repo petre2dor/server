@@ -53,7 +53,11 @@ class Imaginary extends ProviderV2 {
 	 * {@inheritDoc}
 	 */
 	public function getMimeType(): string {
-		return '/image\/(bmp|x-bitmap|png|jpeg|gif|heic|heif|svg|webp)/';
+		return self::supportedMimeTypes();
+	}
+
+	static public function supportedMimeTypes(): string {
+		return '/image\/(bmp|x-bitmap|png|jpeg|gif|heic|svg|webp)/';
 	}
 
 	public function getCroppedThumbnail(File $file, int $maxX, int $maxY, bool $crop): ?IImage {

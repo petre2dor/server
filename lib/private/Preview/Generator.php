@@ -140,7 +140,7 @@ class Generator {
 		if (count($specifications) === 1
 			&& (($specifications[0]['width'] === 250 && $specifications[0]['height'] === 250)
 				|| ($specifications[0]['width'] === 150 && $specifications[0]['height'] === 150))
-			&& str_starts_with($mimeType, 'image/')
+			&& preg_match(Imaginary::supportedMimeTypes(), $mimeType)
 			&& $this->config->getSystemValueString('preview_imaginary_url', 'invalid') !== 'invalid') {
 
 			$crop = $specifications[0]['crop'] ?? false;
