@@ -25,5 +25,8 @@ namespace OCP\Files\Events\Node;
 
 use OCP\EventDispatcher\Event;
 
-class FilesystemTearedDownEvent extends Event {
+/**
+ * Event fired after the filesystem has been torn down
+ */
+class FilesystemTornDownEvent extends Event {
 }
