@@ -609,15 +609,25 @@ Raw output
 	}
 
 	protected function getSuggestedOverwriteCliURL(): string {
-		$suggestedOverwriteCliUrl = '';
-		if ($this->config->getSystemValue('overwrite.cli.url', '') === '') {
-			$suggestedOverwriteCliUrl = $this->request->getServerProtocol() . '://' . $this->request->getInsecureServerHost() . \OC::$WEBROOT;
+		$currentOverwriteCliUrl = $this->config->getSystemValue('overwrite.cli.url', '');
+		$suggestedOverwriteCliUrl = $this->request->getServerProtocol() . '://' . $this->request->getInsecureServerHost() . \OC::$WEBROOT;
+
+		// Set if not set yet
+		if ($currentOverwriteCliUrl === '') {
 			if (!$this->config->getSystemValue('config_is_read_only', false)) {
 				// Set the overwrite URL when it was not set yet.
 				$this->config->setSystemValue('overwrite.cli.url', $suggestedOverwriteCliUrl);
-				$suggestedOverwriteCliUrl = '';
+				$currentOverwriteCliUrl = $suggestedOverwriteCliUrl;
 			}
 		}
+
+		// Check correctness by comparing with suggested URL
+		// This might lead to false positives though but that is fine since you should access your Nextcloud via the here defined URL either way
+		// In case of a false positive, simply ignore the suggestion
+		if ($suggestedOverwriteCliUrl === rtrim($currentOverwriteCliUrl, "/")) {
+			$suggestedOverwriteCliUrl = '';
+		}
+
 		return $suggestedOverwriteCliUrl;
 	}
 
