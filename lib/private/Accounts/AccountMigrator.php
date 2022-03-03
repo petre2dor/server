@@ -57,17 +57,6 @@ class AccountMigrator implements IMigrator {
 		$this->avatarManager = $avatarManager;
 	}
 
-	private function getExtension(string $mimeType): string {
-		switch ($mimeType) {
-			case 'image/jpeg':
-				return 'jpg';
-			case 'image/png':
-				return 'png';
-			default:
-				throw new AccountMigratorException("Invalid avatar mimetype: \"$mimeType\"");
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -80,10 +69,12 @@ class AccountMigrator implements IMigrator {
 
 		$avatar = $this->avatarManager->getAvatar($user->getUID());
 		if ($avatar->isCustomAvatar()) {
-			$avatarData = $avatar->get(-1)->data();
-			$ext = $this->getExtension($avatar->get(-1)->dataMimeType());
+			$avatarFile = $avatar->getFile(-1);
+			$data = $avatarFile->getContent();
+			$ext = $avatarFile->getExtension();
+
 			$output->writeln('Exporting avatar to avatar.' . $ext . '…');
-			if ($exportDestination->addFileContents("avatar.$ext", $avatarData) === false) {
+			if ($exportDestination->addFileContents("avatar.$ext", $data) === false) {
 				throw new AccountMigratorException('Could not export avatar');
 			}
 		}
@@ -127,17 +118,22 @@ class AccountMigrator implements IMigrator {
 			throw new AccountMigratorException('Failed to import account information');
 		}
 
-		foreach ($importSource->getFolderListing('') as $filename) {
-			if (str_starts_with($filename, 'avatar.')) {
-				$avatarFilename = $filename;
-			}
-		}
+		$avatarFiles = array_filter(
+			$importSource->getFolderListing(''),
+			fn (string $filename) => pathinfo($filename, PATHINFO_FILENAME) === 'avatar',
+		);
 
-		if (isset($avatarFilename)) {
-			$output->writeln('Importing avatar from ' . $avatarFilename . '…');
-			$avatar = $importSource->getFileContents($avatarFilename);
+		if (!empty($avatarFiles)) {
+			if (count($avatarFiles) >= 2) {
+				$output->writeln('Expected single avatar image file, using first file found');
+			}
+
+			$avatarImportFile = reset($avatarFiles);
+
+			$output->writeln('Importing avatar from ' . $avatarImportFile . '…');
+			$data = $importSource->getFileContents($avatarImportFile);
 			$image = new \OC_Image();
-			$image->loadFromData($avatar);
+			$image->loadFromData($data);
 			try {
 				$avatar = $this->avatarManager->getAvatar($user->getUID());
 				$avatar->set($image);
