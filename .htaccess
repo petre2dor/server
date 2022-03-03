@@ -106,7 +106,3 @@
 
 AddDefaultCharset utf-8
 Options -Indexes
-#### DO NOT CHANGE ANYTHING ABOVE THIS LINE ####
-
-ErrorDocument 403 /
-ErrorDocument 404 /
