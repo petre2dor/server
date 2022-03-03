@@ -5,10 +5,10 @@
 			<table>
 				<thead>
 					<tr>
-						<th class="nowrap" style="cursor: pointer;">
-							#<span class="text-muted">▲</span>
+						<th class="nowrap">
+							#
 						</th>
-						<th class="nowrap" style="cursor: pointer;">
+						<th class="nowrap">
 							Time<span />
 						</th>
 						<th style="width: 100%;">
@@ -33,7 +33,7 @@
 							<button v-if="query.explainable && explainedQueries[index] === undefined" @click="explainQuery(index)">
 								Explain query
 							</button>
-							<QueryExplaination v-else-if="explainedQueries[index]" :explaination="explainedQueries[index] ? explainedQueries[index] : ''" />
+							<QueryExplanation v-else-if="explainedQueries[index]" :explaination="explainedQueries[index] ? explainedQueries[index] : ''" />
 						</td>
 					</tr>
 				</tbody>
@@ -44,7 +44,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import QueryExplaination from '../components/QueryExplaination'
+import QueryExplanation from '../components/QueryExplanation'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 

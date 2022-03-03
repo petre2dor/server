@@ -32,7 +32,7 @@
  */
 namespace OCA\User_LDAP;
 
-use OC\Profiler\Profiler;
+use OCP\Profiler\IProfiler;
 use OC\ServerNotAvailableException;
 use OCA\User_LDAP\DataCollector\LdapDataCollector;
 use OCA\User_LDAP\Exceptions\ConstraintViolationException;
@@ -53,8 +53,8 @@ class LDAP implements ILDAPWrapper {
 		$this->pagedResultsAdapter = new Php73();
 		$this->logFile = $logFile;
 
-		/** @var Profiler $profiler */
-		$profiler = \OC::$server->get(Profiler::class);
+		/** @var IProfiler $profiler */
+		$profiler = \OC::$server->get(IProfiler::class);
 		if ($profiler->isEnabled()) {
 			$this->dataCollector = new LdapDataCollector();
 			$profiler->add($this->dataCollector);

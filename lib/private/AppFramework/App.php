@@ -35,7 +35,7 @@ use OC\AppFramework\DependencyInjection\DIContainer;
 use OC\AppFramework\Http\Dispatcher;
 use OC\AppFramework\Http\Request;
 use OC\Diagnostics\EventLogger;
-use OC\Profiler\Profiler;
+use OCP\Profiler\IProfiler;
 use OC\Profiler\RoutingDataCollector;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\ICallbackResponse;
@@ -120,8 +120,8 @@ class App {
 	 * @throws HintException
 	 */
 	public static function main(string $controllerName, string $methodName, DIContainer $container, array $urlParams = null) {
-		/** @var Profiler $profiler */
-		$profiler = $container->get(Profiler::class);
+		/** @var IProfiler $profiler */
+		$profiler = $container->get(IProfiler::class);
 		$config = $container->get(IConfig::class);
 		// Disable profiler on the profiler UI
 		$profiler->setEnabled($profiler->isEnabled() && !str_starts_with($urlParams['_route'], 'profiler.'));

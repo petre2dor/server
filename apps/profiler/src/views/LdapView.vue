@@ -5,10 +5,10 @@
 			<table>
 				<thead>
 				<tr>
-					<th class="nowrap" style="cursor: pointer;">
-						#<span class="text-muted">▲</span>
+					<th class="nowrap">
+						#
 					</th>
-					<th class="nowrap" style="cursor: pointer;">
+					<th class="nowrap">
 						Time<span/>
 					</th>
 					<th style="width: 100%;">

@@ -121,7 +121,6 @@ use OC\Memcache\Factory;
 use OC\Notification\Manager;
 use OC\OCS\DiscoveryService;
 use OC\Preview\GeneratorHelper;
-use OC\Profiler\Profiler;
 use OC\Remote\Api\ApiFactory;
 use OC\Remote\InstanceFactory;
 use OC\RichObjectStrings\Validator;
@@ -254,6 +253,8 @@ use OCA\Files_External\Service\UserStoragesService;
 use OCA\Files_External\Service\UserGlobalStoragesService;
 use OCA\Files_External\Service\GlobalStoragesService;
 use OCA\Files_External\Service\BackendService;
+use OCP\Profiler\IProfiler;
+use OC\Profiler\Profiler;
 
 /**
  * Class Server
@@ -336,6 +337,10 @@ class Server extends ServerContainer implements IServerContainer {
 					$c->get(SystemConfig::class)
 				)
 			);
+		});
+
+		$this->registerService(IProfiler::class, function (Server $c) {
+			return new Profiler($c->get(SystemConfig::class));
 		});
 
 		$this->registerService(\OCP\Encryption\IManager::class, function (Server $c) {
@@ -680,7 +685,7 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerDeprecatedAlias('UserCache', ICache::class);
 
 		$this->registerService(Factory::class, function (Server $c) {
-			$profiler = $c->get(Profiler::class);
+			$profiler = $c->get(IProfiler::class);
 			$arrayCacheFactory = new \OC\Memcache\Factory('', $c->get(LoggerInterface::class),
 				$profiler,
 				ArrayCache::class,
@@ -759,12 +764,6 @@ class Server extends ServerContainer implements IServerContainer {
 			);
 		});
 
-		$this->registerService(Profiler::class, function (Server $c) {
-			/** @var IRequest $request */
-			$profiler = new Profiler();
-			$profiler->setEnabled($c->get(\OCP\IConfig::class)->getSystemValue('debug', false));
-			return $profiler;
-		});
 		$this->registerAlias(IAvatarManager::class, AvatarManager::class);
 		/** @deprecated 19.0.0 */
 		$this->registerDeprecatedAlias('AvatarManager', AvatarManager::class);

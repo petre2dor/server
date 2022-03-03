@@ -55,6 +55,7 @@ use OC\SystemConfig;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\ILogger;
 use OCP\PreConditionNotMetException;
+use OCP\Profiler\IProfiler;
 
 class Connection extends \Doctrine\DBAL\Connection {
 	/** @var string */
@@ -186,8 +187,8 @@ class Connection extends \Doctrine\DBAL\Connection {
 		$this->tablePrefix = $params['tablePrefix'];
 
 		$this->systemConfig = \OC::$server->get(SystemConfig::class);
-		/** @var \OC\Profiler\Profiler */
-		$profiler = \OC::$server->get(\OC\Profiler\Profiler::class);
+		/** @var \OCP\Profiler\IProfiler */
+		$profiler = \OC::$server->get(IProfiler::class);
 		if ($profiler->isEnabled()) {
 			$this->dbDataCollector = new DbDataCollector($this);
 			$profiler->add($this->dbDataCollector);

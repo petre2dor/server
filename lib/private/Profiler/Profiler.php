@@ -29,26 +29,31 @@ namespace OC\Profiler;
 use OC\AppFramework\Http\Request;
 use OCP\AppFramework\Http\Response;
 use OCP\DataCollector\IDataCollector;
+use OCP\IConfig;
+use OCP\Profiler\IProfiler;
+use OCP\Profiler\IProfile;
+use OC\SystemConfig;
 
-class Profiler {
+class Profiler implements IProfiler {
 	/** @var array<string, IDataCollector> */
-	private $dataCollectors = [];
+	private array $dataCollectors = [];
 
-	/** @var FileProfilerStorage  */
-	private  $storage;
+	private FileProfilerStorage $storage;
 
-	/** @var bool */
-	private $enabled = false;
+	private bool $enabled = false;
 
-	public function __construct() {
-		$this->storage = new FileProfilerStorage('/var/www/html/data/profiler');
+	public function __construct(SystemConfig $config) {
+		$this->storage = new FileProfilerStorage($config->getValue('datadirectory',  \OC::$SERVERROOT . '/data') . '/profiler');
+		/** @var array $profilerConditions */
+		$this->profilerConditions = $config->getValue('profiler.condition', []);
+		$this->enabled = $config->getValue('profiler', true) || $config->getValue('debug', true);
 	}
 
 	public function add(IDataCollector $dataCollector): void {
 		$this->dataCollectors[$dataCollector->getName()] = $dataCollector;
 	}
 
-	public function loadProfileFromResponse(Response $response): ?Profile {
+	public function loadProfileFromResponse(Response $response): ?IProfile {
 		if (!$token = $response->getHeaders()['X-Debug-Token']) {
 			return null;
 		}
@@ -56,15 +61,15 @@ class Profiler {
 		return $this->loadProfile($token);
 	}
 
-	public function loadProfile(string $token): ?Profile {
+	public function loadProfile(string $token): ?IProfile {
 		return $this->storage->read($token);
 	}
 
-	public function saveProfile(Profile $profile): bool {
+	public function saveProfile(IProfile $profile): bool {
 		return $this->storage->write($profile);
 	}
 
-	public function collect(Request $request, Response $response): Profile {
+	public function collect(Request $request, Response $response): IProfile {
 		$profile = new Profile($request->getId());
 		$profile->setTime(time());
 		$profile->setUrl($request->getRequestUri());
@@ -82,20 +87,20 @@ class Profiler {
 	/**
 	 * @return array[]
 	 */
-	public function find(?string $ip, ?string $url, ?int $limit, ?string $method, ?string $start, ?string $end,
+	public function find(?string $url, ?int $limit, ?string $method, ?string $start, ?string $end,
 						 string $statusCode = null): array {
-		return $this->storage->find($ip, $url, $limit, $method, $start, $end, $statusCode);
+		return $this->storage->find($url, $limit, $method, $start, $end, $statusCode);
 	}
 
-    public function dataProviders() {
+	public function dataProviders(): array {
 		return array_keys($this->dataCollectors);
-    }
+	}
 
-    public function isEnabled(): bool {
+	public function isEnabled(): bool {
 		return $this->enabled;
 	}
-
-    public function setEnabled(bool $enabled): void {
+	
+	public function setEnabled(bool $enabled): void {
 		$this->enabled = $enabled;
 	}
 }

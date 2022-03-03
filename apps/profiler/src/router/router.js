@@ -26,7 +26,6 @@ import DatabaseProfilerView from '../views/DatabaseProfilerView'
 import LoadingView from '../views/LoadingView'
 import RequestView from '../views/RequestView'
 import LdapView from '../views/LdapView'
-import RouterView from '../views/RouterView'
 import EventsView from '../views/EventsView'
 import { getRootUrl, generateUrl } from '@nextcloud/router'
 
@@ -67,12 +66,6 @@ export default new VueRouter({
 			path: '/apps/profiler/profiler/event/:token/',
 			name: 'event',
 			component: EventsView,
-			props: true,
-		},
-		{
-			path: '/apps/profiler/profiler/router/:token/',
-			name: 'router',
-			component: RouterView,
 			props: true,
 		},
 		{

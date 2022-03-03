@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\Profiler\AppInfo;
 
-use OC\Profiler\Profiler;
+use OCP\Profiler\IProfiler;
 use OCA\Profiler\DataCollector\EventLoggerDataProvider;
 use OCA\Profiler\DataCollector\HttpDataCollector;
 use OCP\AppFramework\App;
@@ -47,8 +47,8 @@ class Application extends App implements IBootstrap {
 	public function boot(IBootContext $context): void {
 		$server = $context->getServerContainer();
 
-		/** @var Profiler $profiler */
-		$profiler = $server->get(Profiler::class);
+		/** @var IProfiler $profiler */
+		$profiler = $server->get(IProfiler::class);
 		$profiler->add(new HttpDataCollector());
 		$profiler->add(new EventLoggerDataProvider($server->getEventLogger()));
 

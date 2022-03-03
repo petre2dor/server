@@ -68,10 +68,6 @@ export default {
 			recentProfiles,
 			categoryInfo: [
 				{
-					id: 'router',
-					name: 'Router',
-				},
-				{
 					id: 'http',
 					name: 'Request and Response',
 				},
@@ -85,7 +81,7 @@ export default {
 				},
 				{
 					id: 'ldap',
-					name: 'Ldap',
+					name: 'LDAP',
 				},
 			],
 		}
@@ -98,7 +94,6 @@ export default {
 			this.token = newToken.token
 		},
 		selectedCategory(newCategory) {
-			console.debug(newCategory)
 			this.$router.push({ name: newCategory, params: { token: this.$router.params.token } })
 		},
 	},

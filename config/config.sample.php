@@ -958,6 +958,32 @@ $CONFIG = [
  */
 'log_rotate_size' => 100 * 1024 * 1024,
 
+/**
+ * Enable built-in profiler. Helpful when trying to debug performance
+ * issues.
+ *
+ * Note that this has a performance impact and shouldn't be enabled
+ * on production.
+ */
+'profiler' => false,
+
+/**
+ * Profiler condition for enabling the profiler based on conditions. Once
+ * one of these conditions is met, the profiler is enabled. This allows to
+ * profile specific requests, users or apps
+ *
+ * Supported conditions:
+ *  - ``shared_secret``: if a request parameter with the name `profiler_secret`
+ *    is set to this value the condition is met
+ *  - ``ip``: if the current request is done by one of the specified ip address,
+ *    this condition is met
+ *
+ * Defaults to an empty array.
+ */
+'profiler.condition' => [
+	'shared_secret' => '57b58edb6637fe3059b3595cf9c41b9',
+	'ip' => ['127.0.0.1'],
+],
 
 /**
  * Alternate Code Locations

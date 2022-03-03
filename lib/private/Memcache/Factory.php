@@ -31,7 +31,7 @@
  */
 namespace OC\Memcache;
 
-use OC\Profiler\Profiler;
+use OCP\Profiler\IProfiler;
 use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\ILogger;
@@ -70,7 +70,7 @@ class Factory implements ICacheFactory {
 	/** @var string */
 	private $logFile;
 
-	/** @var Profiler $profiler */
+	/** @var IProfiler $profiler */
 	private $profiler;
 
 	/**
@@ -81,7 +81,7 @@ class Factory implements ICacheFactory {
 	 * @param ?class-string<IMemcache> $lockingCacheClass
 	 * @param string $logFile
 	 */
-	public function __construct(string $globalPrefix, LoggerInterface $logger, Profiler $profiler,
+	public function __construct(string $globalPrefix, LoggerInterface $logger, IProfiler $profiler,
 		?string $localCacheClass = null, ?string $distributedCacheClass = null, ?string $lockingCacheClass = null, string $logFile = '') {
 		$this->logger = $logger;
 		$this->logFile = $logFile;

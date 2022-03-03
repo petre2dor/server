@@ -33,17 +33,20 @@ class HttpDataCollector extends AbstractDataCollector {
 	}
 
 	public function collect(Request $request, Response $response, \Throwable $exception = null): void {
-		// TODO extract more information
 		$this->data = [
 			'request' => [
 				'url' => $request->getRequestUri(),
 				'method' => $request->getMethod(),
-				'cookiesParams' => $request->getCookieParams(),
 				'content' => $request->getParams(),
-				'cookies' => $request->cookies,
-				//'request' => $request,
+				'httpProtocol' => $request->getHttpProtocol(),
+				'userAgent' => $_SERVER['HTTP_USER_AGENT'],
+				'params' => $request->getParams(),
 			],
-			//'response' => $response,
+			'response' => [
+				'headers' => $response->getHeaders(),
+				'statusCode' => $response->getStatus(),
+				'etag' => $response->getETag(),
+			]
 		];
 	}
 }

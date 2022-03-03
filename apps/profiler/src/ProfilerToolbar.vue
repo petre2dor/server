@@ -1,7 +1,7 @@
 <template>
 	<div id="profiler-toolbar">
-		<footer v-if="profile" class="bottom-bar">
-			<div role="button" class="toolbar-block" @click="openProfiler('router')">
+		<footer v-if="profile" class="bottom-bar" :class="{ 'bottom-bar-closed': !open }">
+			<div role="button" class="toolbar-block" @click="openProfiler('http')" v-if="open">
 				<div class="text-v-center px-3" :class="background">
 					{{ profile.statusCode }}
 				</div>
@@ -15,7 +15,7 @@
 					<div><b>Token:</b> {{ profile.token }}</div>
 				</div>
 			</div>
-			<div role="button" class="toolbar-block text-v-center px-3" @click="openProfiler('event')">
+			<div role="button" class="toolbar-block text-v-center px-3" @click="openProfiler('event')" v-if="open">
 				{{ displayDuration(profile.collectors.event.runtime.duration + profile.collectors.event.autoloader.duration) }} ms
 				<div class="info" style="width: 225px">
 					<div><b>Total time:</b> {{ displayDuration(profile.collectors.event.runtime.duration + profile.collectors.event.autoloader.duration) }} ms</div>
@@ -29,7 +29,7 @@
 				</div>
 			</div>
 
-			<div role="button" class="toolbar-block text-v-center px-3" @click="openProfiler('db')">
+			<div role="button" class="toolbar-block text-v-center px-3" @click="openProfiler('db')" v-if="open">
 				{{ queriesNumber }} in {{ queriesTime }} ms
 				<div class="info" style="width: 225px">
 					<div><b>Number of queries:</b> {{ queriesNumber }}</div>
@@ -37,7 +37,7 @@
 				</div>
 			</div>
 
-			<div role="button" class="toolbar-block text-v-center px-3" v-if="profile.collectors.ldap" @click="openProfiler('ldap')">
+			<div role="button" class="toolbar-block text-v-center px-3" v-if="profile.collectors.ldap && open" @click="openProfiler('ldap')">
 				{{ profile.collectors.ldap.length }} LDAP request
 				<div v-if="profile.collectors.ldap.length > 0" class="info" style="width: 500px; max-height: 600px; overflow-x: scroll">
 					<div><b>Number of queries:</b> {{ profile.collectors.ldap.length }}</div>
@@ -45,7 +45,7 @@
 				</div>
 			</div>
 
-			<div role="button" class="toolbar-block text-v-center px-3" v-if="cacheTotal > 0" @click="openProfiler('cache')">
+			<div role="button" class="toolbar-block text-v-center px-3" v-if="cacheTotal > 0 && open" @click="openProfiler('cache')">
 				{{ cacheHits }} / {{ cacheTotal }} cache hits
 				<div class="info" style="width: 200px; max-height: 600px; overflow-x: scroll">
 					<div><b>Cache hits:</b> {{ cacheHits }} / {{ cacheTotal }}</div>
@@ -53,8 +53,8 @@
 				</div>
 			</div>
 
-			<div role="button" class="toolbar-block text-v-center px-3" @click="openProfiler('db')">
-				{{ stackElements.length }} AJAX requests
+			<div role="button" class="toolbar-block text-v-center px-3" @click="openProfiler('db')" v-if="open">
+				{{ stackElements.length }} XHR requests
 				<div class="info" style="width: 500px; max-height: 600px; overflow-x: scroll">
 					<div v-for="(stackElement, index) in stackElements" :key="index">
 						<a :href="generateAjaxUrl(stackElement)">
@@ -64,6 +64,9 @@
 						</a>
 					</div>
 				</div>
+			</div>
+			<div class="toggle-button toolbar-block text-v-center px-3" @click="open = !open">
+			   {{ open ? 'Close' : 'Open' }}
 			</div>
 		</footer>
 	</div>
@@ -81,6 +84,7 @@ export default {
 	data() {
 		return {
 			token,
+			open: true,
 		}
 	},
 	computed: {
@@ -190,6 +194,12 @@ export default {
 	border-bottom: 1px solid var(--color-border);
 	z-index: 99999;
 
+	&.bottom-bar-closed {
+		width: initial;
+		right: 0;
+		left: initial;
+	}
+
 	& > .toolbar-block {
 		height: 100%;
 		&, & > .text-v-center {
@@ -261,5 +271,9 @@ export default {
 }
 .url {
 	margin-left: 48px;
+}
+
+.toggle-button {
+	margin-left: auto;
 }
 </style>

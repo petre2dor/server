@@ -57,7 +57,7 @@ use OCP\IUserSession;
 use OCP\Support\Subscription\IRegistry;
 use OCP\UserStatus\IManager as IUserStatusManager;
 use OCP\Util;
-use OC\Profiler\Profiler;
+use OCP\Profiler\IProfiler;
 
 class TemplateLayout extends \OC_Template {
 	private static $versionHash = '';
@@ -154,7 +154,7 @@ class TemplateLayout extends \OC_Template {
 			}
 
 			// Setup profiler toolbar
-			$profiler = \OC::$server->get(Profiler::class);
+			$profiler = \OC::$server->get(IProfiler::class);
 			if ($profiler->isEnabled() && \OC::$server->getGroupManager()->isAdmin($user->getUID())) {
 				// TODO potentially create more DB query when profiler is enabled
 				$this->initialState->provideInitialState('profiler', 'request-token', \OC::$server->getRequest()->getId());

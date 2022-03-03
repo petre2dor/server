@@ -11,18 +11,16 @@
 
 namespace OC\Profiler;
 
+use OCP\Profiler\IProfile;
+
 /**
  * Storage for profiler using files.
  *
  * @author Alexandre Salomé <alexandre.salome@gmail.com>
  */
 class FileProfilerStorage {
-    /**
-     * Folder where profiler data are stored.
-     *
-     * @var string
-     */
-    private $folder;
+    // Folder where profiler data are stored.
+    private string $folder;
 
     /**
      * Constructs the file storage using a "dsn-like" path.
@@ -43,7 +41,7 @@ class FileProfilerStorage {
     /**
      * {@inheritdoc}
      */
-    public function find(?string $ip, ?string $url, ?int $limit, ?string $method, int $start = null, int $end = null, string $statusCode = null): array
+    public function find(?string $url, ?int $limit, ?string $method, int $start = null, int $end = null, string $statusCode = null): array
     {
         $file = $this->getIndexFilename();
 
@@ -51,10 +49,10 @@ class FileProfilerStorage {
             return [];
         }
 
-		$file = fopen($file, 'r');
+	$file = fopen($file, 'r');
         fseek($file, 0, \SEEK_END);
 
-		$result = [];
+	$result = [];
         while (\count($result) < $limit && $line = $this->readLineFromFile($file)) {
             $values = str_getcsv($line);
             [$csvToken, $csvMethod, $csvUrl, $csvTime, $csvParent, $csvStatusCode] = $values;
@@ -108,7 +106,7 @@ class FileProfilerStorage {
     /**
      * {@inheritdoc}
      */
-    public function read(string $token): ?Profile
+    public function read(string $token): ?IProfile
     {
         if (!$token || !file_exists($file = $this->getFilename($token))) {
             return null;
@@ -126,7 +124,7 @@ class FileProfilerStorage {
      *
      * @throws \RuntimeException
      */
-    public function write(Profile $profile): bool
+    public function write(IProfile $profile): bool
     {
         $file = $this->getFilename($profile->getToken());
 
@@ -143,7 +141,7 @@ class FileProfilerStorage {
         // when there are errors in sub-requests, the parent and/or children tokens
         // may equal the profile token, resulting in infinite loops
         $parentToken = $profile->getParentToken() !== $profileToken ? $profile->getParentToken() : null;
-        $childrenToken = array_filter(array_map(function (Profile $p) use ($profileToken) {
+        $childrenToken = array_filter(array_map(function (IProfile $p) use ($profileToken) {
             return $profileToken !== $p->getToken() ? $p->getToken() : null;
         }, $profile->getChildren()));
 
@@ -195,7 +193,7 @@ class FileProfilerStorage {
      *
      * @return string The profile filename
      */
-    protected function getFilename(string $token)
+    protected function getFilename(string $token): string
     {
         // Uses 4 last characters, because first are mostly the same.
         $folderA = substr($token, -2, 2);
@@ -209,7 +207,7 @@ class FileProfilerStorage {
      *
      * @return string The index filename
      */
-    protected function getIndexFilename()
+    protected function getIndexFilename(): string
     {
         return $this->folder.'/index.csv';
     }
@@ -261,7 +259,7 @@ class FileProfilerStorage {
         return '' === $line ? null : $line;
     }
 
-    protected function createProfileFromData(string $token, array $data, Profile $parent = null): Profile {
+    protected function createProfileFromData(string $token, array $data, IProfile $parent = null): IProfile {
         $profile = new Profile($token);
         $profile->setMethod($data['method']);
         $profile->setUrl($data['url']);

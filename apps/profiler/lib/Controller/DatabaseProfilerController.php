@@ -6,7 +6,7 @@ use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Exception;
 use OC\DB\DbDataCollector;
-use OC\Profiler\Profiler;
+use OCP\Profiler\IProfiler;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\NotFoundResponse;
@@ -17,13 +17,11 @@ use PDO;
 
 class DatabaseProfilerController extends Controller {
 
-	/** @var Profiler */
-	private $profiler;
+	private IProfiler $profiler;
 
-	/** @var IDBConnection */
-	private $connection;
+	private IDBConnection $connection;
 
-	public function __construct(string $appName, IRequest $request, Profiler $profiler, IDBConnection $connection) {
+	public function __construct(string $appName, IRequest $request, IProfiler $profiler, IDBConnection $connection) {
 		parent::__construct($appName, $request);
 		$this->profiler = $profiler;
 		$this->connection = $connection;

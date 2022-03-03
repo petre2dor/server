@@ -29,8 +29,7 @@ use OCP\DataCollector\AbstractDataCollector;
 use OCP\Diagnostics\IEventLogger;
 
 class EventLoggerDataProvider extends AbstractDataCollector {
-	/** @var IEventLogger */
-	private $eventLogger;
+	private IEventLogger $eventLogger;
 
 	public function __construct(IEventLogger $eventLogger) {
 		$this->eventLogger = $eventLogger;

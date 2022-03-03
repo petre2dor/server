@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 import Vue from 'vue'
 import App from './ProfilerToolbar.vue'
 import Vuex from 'vuex'
@@ -98,11 +97,6 @@ const extractHeaders = function(xhr, stackElement) {
 	// eslint-disable-next-line
 	if (ret = allHeaders.match(/^x-debug-token-link:\s+(.*)$/im)) {
 		stackElement.profilerUrl = ret[1]
-	}
-	// eslint-disable-next-line
-	if (ret = allHeaders.match(/^Symfony-Debug-Toolbar-Replace:\s+(.*)$/im)) {
-		stackElement.toolbarReplaceFinished = false
-		stackElement.toolbarReplace = ret[1] === '1'
 	}
 }
 

@@ -1,35 +1,50 @@
 <?php
 
+/**
+ * @copyright 2022 Carl Schwan <carl@carlschwan.eu>
+ *
+ * @author Carl Schwan <carl@carlschwan.eu>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 namespace OC\Profiler;
 
-
 use OCP\DataCollector\IDataCollector;
+use OCP\Profiler\IProfile;
 
-class Profile implements \JsonSerializable {
-	/** @var string */
-	private $token;
+class Profile implements \JsonSerializable, IProfile {
+	private string $token;
 
-	/** @var int */
-	private $time;
+	private ?int $time = null;
 
-	/** @var string $url */
-	private $url;
+	private ?string $url = null;
 
-	/** @var string $method */
-	private $method;
+	private ?string $method = null;
 
-	/** @var int $statusCode */
-	private $statusCode;
+	private ?int $statusCode = null;
 
 	/** @var array<string, IDataCollector> */
-	private $collectors = [];
+	private array $collectors = [];
 
-	/** @var Profile|null */
-	private $parent;
+	private ?IProfile $parent = null;
 
-	/** @var Profile[] */
-	private $children = [];
+	/** @var IProfile[] */
+	private array $children = [];
 
 	public function __construct(string $token) {
 		$this->token = $token;
@@ -79,11 +94,11 @@ class Profile implements \JsonSerializable {
 		$this->collectors[$collector->getName()] = $collector;
 	}
 
-	public function getParent(): ?Profile {
+	public function getParent(): ?IProfile {
 		return $this->parent;
 	}
 
-	public function setParent(?Profile $parent): void {
+	public function setParent(?IProfile $parent): void {
 		$this->parent = $parent;
 	}
 
@@ -106,7 +121,7 @@ class Profile implements \JsonSerializable {
 		}
 	}
 
-	public function addChild(Profile $profile) {
+	public function addChild(IProfile $profile): void {
 		$this->children[] = $profile;
 		$profile->setParent($this);
 	}

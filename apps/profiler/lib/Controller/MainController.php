@@ -40,16 +40,14 @@ use OCP\AppFramework\Services\IInitialState;
 use OCP\AppFramework\Services\InitialStateProvider;
 use OCP\INavigationManager;
 use OCP\IRequest;
-use \OC\Profiler\Profiler;
+use OCP\Profiler\IProfiler;
 
 class MainController extends Controller {
-	/** @var Profiler */
-	private $profiler;
+	private IProfiler $profiler;
 
-	/** @var IInitialState */
-	private $initialState;
+	private IInitialState $initialState;
 
-	public function __construct(string $appName, IRequest $request, Profiler $profiler, IInitialState $initialState) {
+	public function __construct(string $appName, IRequest $request, IProfiler $profiler, IInitialState $initialState) {
 		parent::__construct($appName, $request);
 		$this->profiler = $profiler;
 		$this->initialState = $initialState;
@@ -59,7 +57,7 @@ class MainController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index(): RedirectResponse {
-		$profiles = $this->profiler->find(null, null, 1, null, null, null);
+		$profiles = $this->profiler->find(null, 1, null, null, null);
 
 		return new RedirectResponse('/index.php/app/profiler/db/' . $profiles['token']);
 	}
@@ -68,11 +66,10 @@ class MainController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function profiler(string $profiler, string $token): TemplateResponse {
-		$profiles = $this->profiler->find(null, null, 20, null, null, null);
+		$profiles = $this->profiler->find(null, 20, null, null, null);
 
 		\OCP\Util::addScript('profiler', 'profiler');
 		$this->initialState->provideInitialState('recentProfiles', $profiles);
-		$this->initialState->provideInitialState('profiler-categories', $this->profiler->dataProviders());
 		$this->initialState->provideInitialState('token', $token);
 
 		return new TemplateResponse('profiler', 'index', []);

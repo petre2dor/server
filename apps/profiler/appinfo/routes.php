@@ -30,21 +30,4 @@ return [
 		['name' => 'main#profiler', 'url' => '/profiler/{profiler}/{token}/', 'verb' => 'GET'],
 		['name' => 'main#profileInfo', 'url' => '/profile/{token}/', 'verb' => 'GET'],
 	],
-	'ocs' => [
-		[
-			'name' => 'Config#getConfig',
-			'url' => '/api/v1/config',
-			'verb' => 'GET',
-		],
-		[
-			'name' => 'Config#setConfig',
-			'url' => '/api/v1/config/{key}',
-			'verb' => 'PUT',
-		],
-		[
-			'name' => 'Config#deleteConfig',
-			'url' => '/api/v1/config/{key}',
-			'verb' => 'DELETE',
-		],
-	]
 ];
