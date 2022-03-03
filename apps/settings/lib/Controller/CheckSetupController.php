@@ -198,25 +198,25 @@ class CheckSetupController extends Controller {
 	}
 
 	/**
-	 * Checks if the Nextcloud server can connect to a specific URL using both HTTPS and HTTP
+	 * Checks if the Nextcloud server can connect to a specific URL using either HTTPS or HTTP
 	 * @return bool
 	 */
-	private function isSiteReachable($sitename) {
-		$httpSiteName = 'http://' . $sitename . '/';
-		$httpsSiteName = 'https://' . $sitename . '/';
+	private function isSiteReachable(string $sitename): bool {
+		$client = $this->clientService->newClient();
 
-		try {
-			$client = $this->clientService->newClient();
-			$client->get($httpSiteName);
-			$client->get($httpsSiteName);
-		} catch (\Exception $e) {
-			$this->logger->error('Cannot connect to: ' . $sitename, [
-				'app' => 'internet_connection_check',
-				'exception' => $e,
-			]);
-			return false;
+		foreach (['https', 'http'] as $proto) {
+			$siteUrl = $proto . '://' . $sitename . '/';
+			try {
+				$client->get($siteUrl);
+				return true;
+			} catch (\Exception $e) {
+				$this->logger->error('Cannot connect to: ' . $sitename, [
+					'app' => 'internet_connection_check',
+					'exception' => $e,
+				]);
+			}
 		}
-		return true;
+		return false;
 	}
 
 	/**
