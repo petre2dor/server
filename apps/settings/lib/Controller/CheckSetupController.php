@@ -81,6 +81,7 @@ use OCP\IRequest;
 use OCP\IServerContainer;
 use OCP\ITempManager;
 use OCP\IURLGenerator;
+use OCP\Util;
 use OCP\Lock\ILockingProvider;
 use OCP\Notification\IManager;
 use OCP\Security\ISecureRandom;
@@ -612,17 +613,8 @@ Raw output
 		$currentOverwriteCliUrl = $this->config->getSystemValue('overwrite.cli.url', '');
 		$suggestedOverwriteCliUrl = $this->request->getServerProtocol() . '://' . $this->request->getInsecureServerHost() . \OC::$WEBROOT;
 
-		// Set if not set yet
-		if ($currentOverwriteCliUrl === '') {
-			if (!$this->config->getSystemValue('config_is_read_only', false)) {
-				// Set the overwrite URL when it was not set yet.
-				$this->config->setSystemValue('overwrite.cli.url', $suggestedOverwriteCliUrl);
-				$currentOverwriteCliUrl = $suggestedOverwriteCliUrl;
-			}
-		}
-
 		// Check correctness by checking if it is a valid URL
-		if (filter_var($currentOverwriteCliUrl, FILTER_VALIDATE_URL)) {
+		if (Util::isValidUrl($currentOverwriteCliUrl)) {
 			$suggestedOverwriteCliUrl = '';
 		}
 
