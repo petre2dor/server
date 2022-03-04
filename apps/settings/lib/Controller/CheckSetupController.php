@@ -621,10 +621,8 @@ Raw output
 			}
 		}
 
-		// Check correctness by comparing with suggested URL
-		// This might lead to false positives though but that is fine since you should access your Nextcloud via the here defined URL either way
-		// In case of a false positive, simply ignore the suggestion
-		if ($suggestedOverwriteCliUrl === rtrim($currentOverwriteCliUrl, "/")) {
+		// Check correctness by checking if it is a valid URL
+		if (filter_var($currentOverwriteCliUrl, FILTER_VALIDATE_URL)) {
 			$suggestedOverwriteCliUrl = '';
 		}
 
