@@ -717,7 +717,7 @@ Raw output
 			$recommendedPHPModules[] = 'gmp';
 		}
 
-		if ($this->config->getAppValue('theming', 'enabled', 'no') === 'yes') {
+		if ($this->config->getAppValue('theming', 'enabled', 'no') === 'yes' && $this->config->getAppValue('core', 'disableImagickWarning', '') !== 'yes') {
 			if (!extension_loaded('imagick')) {
 				$recommendedPHPModules[] = 'imagick';
 			}
